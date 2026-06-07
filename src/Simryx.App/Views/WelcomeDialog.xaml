@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="Simryx.App.Views.WelcomeDialog"
+    x:Uid="WelcomeDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    CornerRadius="16"
+    DefaultButton="Primary">
+
+    <!-- Матовое стекло задаём inline через Background, чтобы не было упреждающей ссылки на StaticResource -->
+    <ContentDialog.Background>
+        <AcrylicBrush TintColor="{ThemeResource SolidBackgroundFillColorBase}"
+                      TintOpacity="0.35"
+                      TintLuminosityOpacity="0.8"
+                      FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}" />
+    </ContentDialog.Background>
+
+    <StackPanel Width="380" Spacing="16">
+        <Border Width="72" Height="72" CornerRadius="20"
+                Background="{ThemeResource SimryxAccentBrush}"
+                HorizontalAlignment="Center">
+            <FontIcon Glyph="&#xE7FC;" FontSize="34" Foreground="White" />
+        </Border>
+
+        <StackPanel Spacing="2">
+            <TextBlock x:Uid="WelcomeHeadline" HorizontalAlignment="Center"
+                       Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock x:Uid="WelcomeSlogan" HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       Style="{StaticResource BodyStrongTextBlockStyle}"
+                       Foreground="{ThemeResource SimryxAccentBrush}" />
+        </StackPanel>
+
+        <TextBlock x:Uid="WelcomeIntro" TextWrapping="Wrap"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+        <!-- Карточка выбора языка и темы -->
+        <Border CornerRadius="12" Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+            <StackPanel Spacing="14">
+                <ComboBox x:Name="LanguageBox" x:Uid="WelcomeLanguageLabel"
+                          HorizontalAlignment="Stretch">
+                    <ComboBoxItem x:Uid="LangRuItem" Tag="ru-RU" />
+                    <ComboBoxItem x:Uid="LangEnItem" Tag="en-US" />
+                </ComboBox>
+
+                <StackPanel Spacing="6">
+                    <TextBlock x:Uid="WelcomeThemeLabel"
+                               Style="{StaticResource BodyStrongTextBlockStyle}" />
+                    <RadioButtons x:Name="ThemeButtons">
+                        <RadioButton x:Uid="ThemeLightItem" Tag="Light" />
+                        <RadioButton x:Uid="ThemeDarkItem" Tag="Dark" />
+                        <RadioButton x:Uid="ThemeSystemItem" Tag="System" />
+                    </RadioButtons>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <TextBlock x:Uid="WelcomeLangNote" FontSize="12" TextWrapping="Wrap"
+                   Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+    </StackPanel>
+</ContentDialog>

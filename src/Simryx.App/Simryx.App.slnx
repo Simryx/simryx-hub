@@ -1,0 +1,6 @@
+<Solution>
+    <Project Path="Simryx.App.csproj">
+        <Platform Solution="Debug|*" Project="x64" />
+        <Deploy />
+    </Project>
+</Solution>

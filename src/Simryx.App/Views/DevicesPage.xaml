@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Simryx.App.Views.DevicesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:Simryx.App.Models"
+    xmlns:svc="using:Simryx.App.Services">
+
+    <Grid Padding="32" RowSpacing="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="2">
+            <TextBlock x:Uid="DevicesTitle" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock x:Uid="DevicesSubtitle"
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <InfoBar x:Uid="DevicesDemoBar" Grid.Row="1"
+                 IsOpen="True" IsClosable="False"
+                 Severity="Informational" />
+
+        <GridView x:Name="DevicesGrid" Grid.Row="2" Margin="0,4,0,0"
+                  svc:Reveal.IsEnabled="True"
+                  ItemsSource="{x:Bind Devices}"
+                  SelectionMode="None" IsItemClickEnabled="False"
+                  ScrollViewer.HorizontalScrollMode="Disabled">
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem">
+                    <Setter Property="Margin" Value="0,0,12,12" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:DemoDevice">
+                    <Border Background="{ThemeResource SimryxCardBrush}"
+                            BorderBrush="{ThemeResource SimryxCardBorderBrush}" BorderThickness="1"
+                            CornerRadius="12" Padding="18" Width="250" Height="150">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid>
+                                <FontIcon Glyph="{Binding Glyph}" FontSize="26"
+                                          HorizontalAlignment="Left"
+                                          Foreground="{ThemeResource SimryxAccentBrush}" />
+                                <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                        Background="{ThemeResource SimryxAccentBrush}"
+                                        CornerRadius="6" Padding="7,2">
+                                    <TextBlock Text="{Binding Badge}" FontSize="11"
+                                               FontWeight="SemiBold" Foreground="#0E1116" />
+                                </Border>
+                            </Grid>
+
+                            <StackPanel Grid.Row="1" Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}"
+                                           Style="{StaticResource BodyStrongTextBlockStyle}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding TypeLabel}" FontSize="13"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE71B;" FontSize="12"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="{Binding Connection}" FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+</Page>

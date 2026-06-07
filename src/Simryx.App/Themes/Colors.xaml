@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+
+        <!-- СВЕТЛАЯ ТЕМА -->
+        <ResourceDictionary x:Key="Light">
+
+            <!-- Бренд -->
+            <Color x:Key="SimryxAccentColor">#5AB6E8</Color>
+            <SolidColorBrush x:Key="SimryxAccentBrush" Color="{StaticResource SimryxAccentColor}" />
+            <SolidColorBrush x:Key="SimryxAccentHoverBrush" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="SimryxSurfaceBrush" Color="#EEF2F7" />
+            <SolidColorBrush x:Key="SimryxCardBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="SimryxCardBorderBrush" Color="#DCE3EC" />
+
+            <!-- Системная палитра акцента в фирменный синий (отвязка от системы) -->
+            <Color x:Key="SystemAccentColor">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorLight1">#6CC2F0</Color>
+            <Color x:Key="SystemAccentColorLight2">#7FCBF2</Color>
+            <Color x:Key="SystemAccentColorLight3">#99D6F5</Color>
+            <Color x:Key="SystemAccentColorDark1">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorDark2">#2F86BD</Color>
+            <Color x:Key="SystemAccentColorDark3">#256C99</Color>
+
+            <!-- Производные заливки акцента -->
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#5AB6E8" Opacity="0.9" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#5AB6E8" Opacity="0.8" />
+
+            <!-- Акцентный текст и ссылки -->
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#2F86BD" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#256C99" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#3A9BD4" />
+
+            <!-- Слайдер: заполнение трека и ползунок -->
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="#2F86BD" />
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="#2F86BD" />
+
+            <!-- Кнопки ссылки (HyperlinkButton) и гиперссылки -->
+            <SolidColorBrush x:Key="HyperlinkButtonForeground" Color="#2F86BD" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPressed" Color="#256C99" />
+
+            <!-- Переключатели on/off в акцент -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#2F86BD" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPressed" Color="#2F86BD" />
+
+            <!-- Акцентные кнопки -->
+            <SolidColorBrush x:Key="AccentButtonBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#3A9BD4" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#2F86BD" />
+            <SolidColorBrush x:Key="AccentButtonForeground" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#0E1116" />
+
+            <SolidColorBrush x:Key="InfoBarInformationalSeverityIconBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#5AB6E8" />
+        </ResourceDictionary>
+
+        <!-- ТЁМНАЯ ТЕМА -->
+        <ResourceDictionary x:Key="Dark">
+
+            <!-- Бренд -->
+            <Color x:Key="SimryxAccentColor">#5AB6E8</Color>
+            <SolidColorBrush x:Key="SimryxAccentBrush" Color="{StaticResource SimryxAccentColor}" />
+            <SolidColorBrush x:Key="SimryxAccentHoverBrush" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SimryxSurfaceBrush" Color="#161616" />
+            <SolidColorBrush x:Key="SimryxCardBrush" Color="#2B2B2B" />
+            <SolidColorBrush x:Key="SimryxCardBorderBrush" Color="#3C3C3C" />
+
+            <!-- Системная палитра акцента в фирменный синий -->
+            <Color x:Key="SystemAccentColor">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorLight1">#6CC2F0</Color>
+            <Color x:Key="SystemAccentColorLight2">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorLight3">#99D6F5</Color>
+            <Color x:Key="SystemAccentColorDark1">#3A9BD4</Color>
+            <Color x:Key="SystemAccentColorDark2">#2F86BD</Color>
+            <Color x:Key="SystemAccentColorDark3">#256C99</Color>
+
+            <!-- Производные заливки акцента -->
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#5AB6E8" Opacity="0.9" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#5AB6E8" Opacity="0.8" />
+
+            <!-- Акцентный текст и ссылки -->
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#7FCBF2" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#99D6F5" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#6CC2F0" />
+
+            <!-- Слайдер -->
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="#4AA6D8" />
+
+            <!-- Кнопки ссылки -->
+            <SolidColorBrush x:Key="HyperlinkButtonForeground" Color="#7FCBF2" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPointerOver" Color="#99D6F5" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPressed" Color="#6CC2F0" />
+
+            <!-- Переключатели -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPressed" Color="#4AA6D8" />
+
+            <!-- Акцентные кнопки -->
+            <SolidColorBrush x:Key="AccentButtonBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="AccentButtonForeground" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#0E1116" />
+
+            <SolidColorBrush x:Key="InfoBarInformationalSeverityIconBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#5AB6E8" />
+        </ResourceDictionary>
+
+        <!-- DEFAULT (как тёмная) -->
+        <ResourceDictionary x:Key="Default">
+
+            <Color x:Key="SimryxAccentColor">#5AB6E8</Color>
+            <SolidColorBrush x:Key="SimryxAccentBrush" Color="{StaticResource SimryxAccentColor}" />
+            <SolidColorBrush x:Key="SimryxAccentHoverBrush" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SimryxSurfaceBrush" Color="#161616" />
+            <SolidColorBrush x:Key="SimryxCardBrush" Color="#2B2B2B" />
+            <SolidColorBrush x:Key="SimryxCardBorderBrush" Color="#3C3C3C" />
+
+            <Color x:Key="SystemAccentColor">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorLight1">#6CC2F0</Color>
+            <Color x:Key="SystemAccentColorLight2">#5AB6E8</Color>
+            <Color x:Key="SystemAccentColorLight3">#99D6F5</Color>
+            <Color x:Key="SystemAccentColorDark1">#3A9BD4</Color>
+            <Color x:Key="SystemAccentColorDark2">#2F86BD</Color>
+            <Color x:Key="SystemAccentColorDark3">#256C99</Color>
+
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#5AB6E8" Opacity="0.9" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#5AB6E8" Opacity="0.8" />
+
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#7FCBF2" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#99D6F5" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#6CC2F0" />
+
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="#4AA6D8" />
+
+            <SolidColorBrush x:Key="HyperlinkButtonForeground" Color="#7FCBF2" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPointerOver" Color="#99D6F5" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPressed" Color="#6CC2F0" />
+
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPressed" Color="#4AA6D8" />
+
+            <SolidColorBrush x:Key="AccentButtonBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#6CC2F0" />
+            <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#4AA6D8" />
+            <SolidColorBrush x:Key="AccentButtonForeground" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#0E1116" />
+            <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#0E1116" />
+
+            <SolidColorBrush x:Key="InfoBarInformationalSeverityIconBackground" Color="#5AB6E8" />
+            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#5AB6E8" />
+        </ResourceDictionary>
+
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

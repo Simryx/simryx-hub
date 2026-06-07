@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- Navigation -->
+  <data name="NavDashboard.Content" xml:space="preserve"><value>Home</value></data>
+  <data name="NavDevices.Content" xml:space="preserve"><value>Devices</value></data>
+  <data name="NavTelemetry.Content" xml:space="preserve"><value>Telemetry</value></data>
+  <data name="NavProfiles.Content" xml:space="preserve"><value>Profiles</value></data>
+
+  <!-- Dashboard -->
+  <data name="DashboardTitle.Text" xml:space="preserve"><value>Home</value></data>
+  <data name="DashboardWelcome.Text" xml:space="preserve"><value>Welcome to Simryx Hub</value></data>
+  <data name="DashboardHint.Text" xml:space="preserve"><value>One hub for your whole rig. Connected devices, the active game and the current profile are shown here.</value></data>
+  <data name="DashboardStatus.Text" xml:space="preserve"><value>System status</value></data>
+  <data name="DashboardQuickActions.Text" xml:space="preserve"><value>Quick actions</value></data>
+
+  <!-- Dashboard status tiles -->
+  <data name="StatusDevicesLabel.Text" xml:space="preserve"><value>Devices</value></data>
+  <data name="CardGameTitle.Text" xml:space="preserve"><value>Active game</value></data>
+  <data name="CardProfileTitle.Text" xml:space="preserve"><value>Current profile</value></data>
+  <data name="StatusUpdatesLabel.Text" xml:space="preserve"><value>Updates</value></data>
+
+  <!-- Dashboard quick actions -->
+  <data name="QuickProfilesLabel.Text" xml:space="preserve"><value>Profiles</value></data>
+  <data name="QuickUpdatesLabel.Text" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="QuickLogsLabel.Text" xml:space="preserve"><value>Open logs</value></data>
+  <data name="UpdateInfoBar.Title" xml:space="preserve"><value>Updates</value></data>
+  <data name="UpdateInfoBar.Message" xml:space="preserve"><value>You're on the latest version (demo).</value></data>
+
+  <!-- Legacy dashboard tiles (stage 15) -->
+  <data name="CardDevicesTitle.Text" xml:space="preserve"><value>Devices connected</value></data>
+  <data name="StatusVersionLabel.Text" xml:space="preserve"><value>Version</value></data>
+  <data name="StatusAppearanceLabel.Text" xml:space="preserve"><value>Theme &amp; language</value></data>
+  <data name="QuickSettingsLabel.Text" xml:space="preserve"><value>Settings</value></data>
+
+  <!-- Tab empty states -->
+  <data name="DevicesEmptyTitle.Text" xml:space="preserve"><value>No devices connected</value></data>
+  <data name="DevicesEmptyText.Text" xml:space="preserve"><value>Connect your wheel, base or pedals via USB — they'll appear here automatically.</value></data>
+  <data name="TelemetryEmptyTitle.Text" xml:space="preserve"><value>Telemetry unavailable</value></data>
+  <data name="TelemetryEmptyText.Text" xml:space="preserve"><value>Launch a supported game — Simryx Hub will read telemetry and show live data here.</value></data>
+  <data name="ProfilesEmptyTitle.Text" xml:space="preserve"><value>No profiles yet</value></data>
+  <data name="ProfilesEmptyText.Text" xml:space="preserve"><value>Profiles store per-game settings and switch automatically.</value></data>
+
+  <!-- Profiles (UI) -->
+  <data name="ProfilesTitle.Text" xml:space="preserve"><value>Profiles</value></data>
+  <data name="ProfilesSubtitle.Text" xml:space="preserve"><value>Per-game settings. Create and edit profiles — they are stored locally.</value></data>
+  <data name="ProfileAddButton.Text" xml:space="preserve"><value>Add profile</value></data>
+  <data name="ProfilesEmptyListText.Text" xml:space="preserve"><value>Click “Add profile” to create your first one.</value></data>
+  <data name="ProfileActivate.Text" xml:space="preserve"><value>Activate</value></data>
+  <data name="ProfileActiveChip.Text" xml:space="preserve"><value>Active</value></data>
+
+  <!-- Devices (demo) -->
+  <data name="DevicesTitle.Text" xml:space="preserve"><value>Devices</value></data>
+  <data name="DevicesSubtitle.Text" xml:space="preserve"><value>Connected devices and their settings. Demo examples are shown for now.</value></data>
+  <data name="DevicesDemoBar.Title" xml:space="preserve"><value>Demo mode</value></data>
+  <data name="DevicesDemoBar.Message" xml:space="preserve"><value>These are sample device cards. Real USB connection and device-type detection are coming in an upcoming update.</value></data>
+  <data name="DemoBadgeText" xml:space="preserve"><value>DEMO</value></data>
+  <data name="DeviceTypeBase" xml:space="preserve"><value>Direct drive base</value></data>
+  <data name="DeviceTypeWheel" xml:space="preserve"><value>Quick-release wheel</value></data>
+  <data name="DeviceTypePedals" xml:space="preserve"><value>Pedal set</value></data>
+  <data name="DeviceTypeShifter" xml:space="preserve"><value>Sequential shifter</value></data>
+  <data name="DeviceTypeHandbrake" xml:space="preserve"><value>Handbrake</value></data>
+
+  <!-- Welcome screen -->
+  <data name="WelcomeDialog.PrimaryButtonText" xml:space="preserve"><value>Get started</value></data>
+  <data name="WelcomeHeadline.Text" xml:space="preserve"><value>Welcome</value></data>
+  <data name="WelcomeSlogan.Text" xml:space="preserve"><value>One hub for your whole rig</value></data>
+  <data name="WelcomeIntro.Text" xml:space="preserve"><value>Let's quickly set up the basics. You can change this later in Settings.</value></data>
+  <data name="WelcomeLanguageLabel.Header" xml:space="preserve"><value>Interface language</value></data>
+  <data name="WelcomeThemeLabel.Text" xml:space="preserve"><value>Theme</value></data>
+  <data name="WelcomeLangNote.Text" xml:space="preserve"><value>If you change the language, the app will restart to apply it fully (including the left menu).</value></data>
+
+  <!-- Settings: title and sections -->
+  <data name="SettingsTitle.Text" xml:space="preserve"><value>Settings</value></data>
+  <data name="AppearanceHeader.Text" xml:space="preserve"><value>Appearance</value></data>
+  <data name="LanguageRegionHeader.Text" xml:space="preserve"><value>Language &amp; region</value></data>
+  <data name="StartupHeader.Text" xml:space="preserve"><value>Startup &amp; system</value></data>
+  <data name="UpdatesHeader.Text" xml:space="preserve"><value>Updates</value></data>
+  <data name="NotificationsHeader.Text" xml:space="preserve"><value>Notifications</value></data>
+  <data name="PrivacyHeader.Text" xml:space="preserve"><value>Privacy</value></data>
+  <data name="AdvancedHeader.Text" xml:space="preserve"><value>Advanced</value></data>
+  <data name="AboutHeader.Text" xml:space="preserve"><value>About</value></data>
+
+  <!-- Restart InfoBar -->
+  <data name="RestartInfoBar.Title" xml:space="preserve"><value>Restart required</value></data>
+  <data name="RestartInfoBar.Message" xml:space="preserve"><value>Restart the app for the changes to take effect.</value></data>
+  <data name="RestartButton.Content" xml:space="preserve"><value>Restart</value></data>
+
+  <!-- Appearance -->
+  <data name="ThemeCard.Header" xml:space="preserve"><value>Theme</value></data>
+  <data name="ThemeCard.Description" xml:space="preserve"><value>Light, dark or follow system</value></data>
+  <data name="ThemeLightItem.Content" xml:space="preserve"><value>Light</value></data>
+  <data name="ThemeDarkItem.Content" xml:space="preserve"><value>Dark</value></data>
+  <data name="ThemeSystemItem.Content" xml:space="preserve"><value>System</value></data>
+  <data name="AccentCard.Header" xml:space="preserve"><value>Accent color</value></data>
+  <data name="AccentCard.Description" xml:space="preserve"><value>Primary color for controls and indicators</value></data>
+  <data name="ReduceMotionCard.Header" xml:space="preserve"><value>Reduce motion</value></data>
+  <data name="ReduceMotionCard.Description" xml:space="preserve"><value>Disables appearance animations (for slower PCs)</value></data>
+
+  <!-- Language &amp; region -->
+  <data name="LanguageCard.Header" xml:space="preserve"><value>Interface language</value></data>
+  <data name="LanguageCard.Description" xml:space="preserve"><value>Applies after restart</value></data>
+  <data name="LangRuItem.Content" xml:space="preserve"><value>Русский</value></data>
+  <data name="LangEnItem.Content" xml:space="preserve"><value>English</value></data>
+  <data name="UnitsCard.Header" xml:space="preserve"><value>Units</value></data>
+  <data name="UnitsCard.Description" xml:space="preserve"><value>Used on telemetry screens</value></data>
+  <data name="UnitsMetricItem.Content" xml:space="preserve"><value>Metric</value></data>
+  <data name="UnitsImperialItem.Content" xml:space="preserve"><value>Imperial</value></data>
+
+  <!-- Startup &amp; system -->
+  <data name="StartupCard.Header" xml:space="preserve"><value>Launch with Windows</value></data>
+  <data name="StartupCard.Description" xml:space="preserve"><value>Simryx Hub will start when you sign in</value></data>
+  <data name="StartMinimizedCard.Header" xml:space="preserve"><value>Start minimized</value></data>
+  <data name="StartMinimizedCard.Description" xml:space="preserve"><value>The window won't open on autostart</value></data>
+  <data name="TrayCard.Header" xml:space="preserve"><value>Minimize to tray</value></data>
+  <data name="TrayCard.Description" xml:space="preserve"><value>On close the window hides to the notification area</value></data>
+
+  <!-- Updates -->
+  <data name="AutoUpdateCard.Header" xml:space="preserve"><value>Check for updates automatically</value></data>
+  <data name="AutoUpdateCard.Description" xml:space="preserve"><value>Checks on app startup</value></data>
+  <data name="ChannelCard.Header" xml:space="preserve"><value>Update channel</value></data>
+  <data name="ChannelCard.Description" xml:space="preserve"><value>Stable is reliable, Beta gets new features sooner</value></data>
+  <data name="ChannelStableItem.Content" xml:space="preserve"><value>Stable</value></data>
+  <data name="ChannelBetaItem.Content" xml:space="preserve"><value>Beta</value></data>
+  <data name="VersionCard.Header" xml:space="preserve"><value>Current version</value></data>
+  <data name="CheckUpdatesButton.Content" xml:space="preserve"><value>Check now</value></data>
+
+  <!-- Notifications -->
+  <data name="NotificationsExpander.Header" xml:space="preserve"><value>Show notifications</value></data>
+  <data name="NotificationsExpander.Description" xml:space="preserve"><value>Choose what to be notified about</value></data>
+  <data name="NotifyUpdatesCard.Header" xml:space="preserve"><value>Software updates</value></data>
+  <data name="NotifyDevicesCard.Header" xml:space="preserve"><value>Device connections</value></data>
+  <data name="NotifyFirmwareCard.Header" xml:space="preserve"><value>Firmware updates</value></data>
+  <data name="NotifyErrorsCard.Header" xml:space="preserve"><value>Errors and warnings</value></data>
+
+  <!-- Privacy -->
+  <data name="StatsCard.Header" xml:space="preserve"><value>Send anonymous statistics</value></data>
+  <data name="StatsCard.Description" xml:space="preserve"><value>Helps improve the app. No personal data</value></data>
+  <data name="CrashCard.Header" xml:space="preserve"><value>Send crash reports</value></data>
+  <data name="CrashCard.Description" xml:space="preserve"><value>Automatically send error data</value></data>
+
+  <!-- Advanced -->
+  <data name="LogsCard.Header" xml:space="preserve"><value>Logs folder</value></data>
+  <data name="LogsCard.Description" xml:space="preserve"><value>Open the folder with app logs</value></data>
+  <data name="OpenLogsButton.Content" xml:space="preserve"><value>Open</value></data>
+  <data name="BackupCard.Header" xml:space="preserve"><value>Settings backup</value></data>
+  <data name="BackupCard.Description" xml:space="preserve"><value>Export and import settings as a JSON file</value></data>
+  <data name="ExportButton.Content" xml:space="preserve"><value>Export</value></data>
+  <data name="ImportButton.Content" xml:space="preserve"><value>Import</value></data>
+  <data name="ResetCard.Header" xml:space="preserve"><value>Reset settings</value></data>
+  <data name="ResetCard.Description" xml:space="preserve"><value>Restore all settings to defaults</value></data>
+  <data name="ResetButton.Content" xml:space="preserve"><value>Reset</value></data>
+
+  <!-- About -->
+  <data name="AboutExpander.Description" xml:space="preserve"><value>One hub for your whole rig</value></data>
+  <data name="LicenseCard.Header" xml:space="preserve"><value>License</value></data>
+  <data name="LicenseCard.Description" xml:space="preserve"><value>Serial number and activation status</value></data>
+  <data name="SiteCard.Header" xml:space="preserve"><value>Website</value></data>
+  <data name="SupportCard.Header" xml:space="preserve"><value>Support</value></data>
+  <data name="SupportLink.Content" xml:space="preserve"><value>Open</value></data>
+  <data name="ChangelogCard.Header" xml:space="preserve"><value>Changelog</value></data>
+  <data name="ChangelogLink.Content" xml:space="preserve"><value>Open</value></data>
+  <data name="LicensesCard.Header" xml:space="preserve"><value>Third-party licenses</value></data>
+  <data name="LicensesLink.Content" xml:space="preserve"><value>Open</value></data>
+
+  <!-- Toggle labels -->
+  <data name="ToggleOn" xml:space="preserve"><value>On</value></data>
+  <data name="ToggleOff" xml:space="preserve"><value>Off</value></data>
+
+  <!-- Profiles (strings from code) -->
+  <data name="ProfileFieldName" xml:space="preserve"><value>Name</value></data>
+  <data name="ProfileFieldGame" xml:space="preserve"><value>Game</value></data>
+  <data name="ProfileFieldSensitivity" xml:space="preserve"><value>Sensitivity</value></data>
+  <data name="ProfileFieldForce" xml:space="preserve"><value>Force feedback (FFB)</value></data>
+  <data name="ProfileFieldNotes" xml:space="preserve"><value>Notes</value></data>
+  <data name="ProfileNamePlaceholder" xml:space="preserve"><value>e.g. Circuit racing</value></data>
+  <data name="ProfileGamePlaceholder" xml:space="preserve"><value>e.g. Assetto Corsa</value></data>
+  <data name="ProfileCreateTitle" xml:space="preserve"><value>New profile</value></data>
+  <data name="ProfileEditTitle" xml:space="preserve"><value>Edit profile</value></data>
+  <data name="ProfileSave" xml:space="preserve"><value>Save</value></data>
+  <data name="ProfileCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ProfileDeleteTitle" xml:space="preserve"><value>Delete profile?</value></data>
+  <data name="ProfileDeleteBody" xml:space="preserve"><value>Profile “{0}” will be deleted. This can't be undone.</value></data>
+  <data name="ProfileDeleteConfirm" xml:space="preserve"><value>Delete</value></data>
+  <data name="ProfileDeleteCancel" xml:space="preserve"><value>Cancel</value></data>
+
+  <!-- Strings from code (flat keys) -->
+  <data name="VersionFormat" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="LicenseInactive" xml:space="preserve"><value>Not activated (demo mode)</value></data>
+  <data name="StatusStartupFailed" xml:space="preserve"><value>Couldn't change autostart.</value></data>
+  <data name="StatusTrayLater" xml:space="preserve"><value>The tray icon will arrive in a future update.</value></data>
+  <data name="StatusUpdateLater" xml:space="preserve"><value>The update server isn't connected yet — checking will come later.</value></data>
+  <data name="StatusExportNoFile" xml:space="preserve"><value>The settings file doesn't exist yet — change any setting and try again.</value></data>
+  <data name="StatusExported" xml:space="preserve"><value>Settings exported.</value></data>
+  <data name="StatusImported" xml:space="preserve"><value>Settings imported. Restart the app.</value></data>
+  <data name="ResetTitle" xml:space="preserve"><value>Reset settings?</value></data>
+  <data name="ResetBody" xml:space="preserve"><value>All settings will return to defaults. This can't be undone.</value></data>
+  <data name="ResetPrimary" xml:space="preserve"><value>Reset</value></data>
+  <data name="ResetClose" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ProfilePriorityChip.Text" xml:space="preserve">
+  <value>Priority</value>
+</data>
+<data name="ProfileSetPriority.Text" xml:space="preserve">
+  <value>Set priority</value>
+</data>
+<data name="ProfileEditorNewTitle" xml:space="preserve">
+  <value>New profile</value>
+</data>
+<data name="ProfileEditorEditTitle" xml:space="preserve">
+  <value>Edit profile</value>
+</data>
+<data name="ProfileEditorName" xml:space="preserve">
+  <value>Name</value>
+</data>
+<data name="ProfileEditorNamePlaceholder" xml:space="preserve">
+  <value>e.g. Circuit racing</value>
+</data>
+<data name="ProfileEditorGame" xml:space="preserve">
+  <value>Game</value>
+</data>
+<data name="ProfileEditorGamePlaceholder" xml:space="preserve">
+  <value>Select a game</value>
+</data>
+<data name="ProfileEditorSensitivity" xml:space="preserve">
+  <value>Sensitivity</value>
+</data>
+<data name="ProfileEditorForce" xml:space="preserve">
+  <value>Force feedback (FFB)</value>
+</data>
+<data name="ProfileEditorNotes" xml:space="preserve">
+  <value>Notes</value>
+</data>
+<data name="ProfileEditorSave" xml:space="preserve">
+  <value>Save</value>
+</data>
+<data name="ProfileEditorCancel" xml:space="preserve">
+  <value>Cancel</value>
+</data>
+</root>

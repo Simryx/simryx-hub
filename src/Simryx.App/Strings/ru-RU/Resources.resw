@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- Навигация -->
+  <data name="NavDashboard.Content" xml:space="preserve"><value>Главная</value></data>
+  <data name="NavDevices.Content" xml:space="preserve"><value>Устройства</value></data>
+  <data name="NavTelemetry.Content" xml:space="preserve"><value>Телеметрия</value></data>
+  <data name="NavProfiles.Content" xml:space="preserve"><value>Профили</value></data>
+
+  <!-- Главная -->
+  <data name="DashboardTitle.Text" xml:space="preserve"><value>Главная</value></data>
+  <data name="DashboardWelcome.Text" xml:space="preserve"><value>Добро пожаловать в Simryx Hub</value></data>
+  <data name="DashboardHint.Text" xml:space="preserve"><value>Один хаб для всего сим-рига. Здесь видны подключённые устройства, активная игра и текущий профиль.</value></data>
+  <data name="DashboardStatus.Text" xml:space="preserve"><value>Статус системы</value></data>
+  <data name="DashboardQuickActions.Text" xml:space="preserve"><value>Быстрые действия</value></data>
+
+  <!-- Плитки статуса Главной -->
+  <data name="StatusDevicesLabel.Text" xml:space="preserve"><value>Устройства</value></data>
+  <data name="CardGameTitle.Text" xml:space="preserve"><value>Активная игра</value></data>
+  <data name="CardProfileTitle.Text" xml:space="preserve"><value>Текущий профиль</value></data>
+  <data name="StatusUpdatesLabel.Text" xml:space="preserve"><value>Обновления</value></data>
+
+  <!-- Быстрые действия Главной -->
+  <data name="QuickProfilesLabel.Text" xml:space="preserve"><value>Профили</value></data>
+  <data name="QuickUpdatesLabel.Text" xml:space="preserve"><value>Проверить обновления</value></data>
+  <data name="QuickLogsLabel.Text" xml:space="preserve"><value>Открыть логи</value></data>
+  <data name="UpdateInfoBar.Title" xml:space="preserve"><value>Обновления</value></data>
+  <data name="UpdateInfoBar.Message" xml:space="preserve"><value>У вас установлена последняя версия (демо).</value></data>
+
+  <!-- Совместимость со старыми плитками Главной (этап 15) -->
+  <data name="CardDevicesTitle.Text" xml:space="preserve"><value>Подключено устройств</value></data>
+  <data name="StatusVersionLabel.Text" xml:space="preserve"><value>Версия</value></data>
+  <data name="StatusAppearanceLabel.Text" xml:space="preserve"><value>Тема и язык</value></data>
+  <data name="QuickSettingsLabel.Text" xml:space="preserve"><value>Настройки</value></data>
+
+  <!-- Пустые состояния вкладок -->
+  <data name="DevicesEmptyTitle.Text" xml:space="preserve"><value>Устройства не подключены</value></data>
+  <data name="DevicesEmptyText.Text" xml:space="preserve"><value>Подключите руль, базу или педали по USB — они появятся здесь автоматически.</value></data>
+  <data name="TelemetryEmptyTitle.Text" xml:space="preserve"><value>Телеметрия недоступна</value></data>
+  <data name="TelemetryEmptyText.Text" xml:space="preserve"><value>Запустите поддерживаемую игру — Simryx Hub начнёт читать телеметрию и покажет данные в реальном времени.</value></data>
+  <data name="ProfilesEmptyTitle.Text" xml:space="preserve"><value>Пока нет профилей</value></data>
+  <data name="ProfilesEmptyText.Text" xml:space="preserve"><value>Профили хранят настройки под каждую игру и переключаются автоматически.</value></data>
+
+  <!-- Профили (UI) -->
+  <data name="ProfilesTitle.Text" xml:space="preserve"><value>Профили</value></data>
+  <data name="ProfilesSubtitle.Text" xml:space="preserve"><value>Настройки под каждую игру. Создавайте и редактируйте профили — они сохраняются локально.</value></data>
+  <data name="ProfileAddButton.Text" xml:space="preserve"><value>Добавить профиль</value></data>
+  <data name="ProfilesEmptyListText.Text" xml:space="preserve"><value>Нажмите «Добавить профиль», чтобы создать первый.</value></data>
+  <data name="ProfileActivate.Text" xml:space="preserve"><value>Активировать</value></data>
+  <data name="ProfileActiveChip.Text" xml:space="preserve"><value>Активен</value></data>
+
+  <!-- Устройства (демо) -->
+  <data name="DevicesTitle.Text" xml:space="preserve"><value>Устройства</value></data>
+  <data name="DevicesSubtitle.Text" xml:space="preserve"><value>Подключённые устройства и их настройки. Сейчас показаны демо-примеры.</value></data>
+  <data name="DevicesDemoBar.Title" xml:space="preserve"><value>Демонстрационный режим</value></data>
+  <data name="DevicesDemoBar.Message" xml:space="preserve"><value>Это примеры карточек устройств. Реальное подключение по USB и определение типа устройства появятся в одном из ближайших обновлений.</value></data>
+  <data name="DemoBadgeText" xml:space="preserve"><value>ДЕМО</value></data>
+  <data name="DeviceTypeBase" xml:space="preserve"><value>База с прямым приводом</value></data>
+  <data name="DeviceTypeWheel" xml:space="preserve"><value>Съёмный руль</value></data>
+  <data name="DeviceTypePedals" xml:space="preserve"><value>Педальный блок</value></data>
+  <data name="DeviceTypeShifter" xml:space="preserve"><value>Секвентальная коробка</value></data>
+  <data name="DeviceTypeHandbrake" xml:space="preserve"><value>Ручной тормоз</value></data>
+
+  <!-- Экран-приветствие -->
+  <data name="WelcomeDialog.PrimaryButtonText" xml:space="preserve"><value>Начать</value></data>
+  <data name="WelcomeHeadline.Text" xml:space="preserve"><value>Добро пожаловать</value></data>
+  <data name="WelcomeSlogan.Text" xml:space="preserve"><value>Один хаб для всего сим-рига</value></data>
+  <data name="WelcomeIntro.Text" xml:space="preserve"><value>Давайте быстро настроим основное. Это можно изменить позже в Настройках.</value></data>
+  <data name="WelcomeLanguageLabel.Header" xml:space="preserve"><value>Язык интерфейса</value></data>
+  <data name="WelcomeThemeLabel.Text" xml:space="preserve"><value>Тема оформления</value></data>
+  <data name="WelcomeLangNote.Text" xml:space="preserve"><value>Если изменить язык, приложение перезапустится, чтобы применить его полностью (включая левое меню).</value></data>
+
+  <!-- Настройки: заголовок и секции -->
+  <data name="SettingsTitle.Text" xml:space="preserve"><value>Настройки</value></data>
+  <data name="AppearanceHeader.Text" xml:space="preserve"><value>Внешний вид</value></data>
+  <data name="LanguageRegionHeader.Text" xml:space="preserve"><value>Язык и регион</value></data>
+  <data name="StartupHeader.Text" xml:space="preserve"><value>Запуск и система</value></data>
+  <data name="UpdatesHeader.Text" xml:space="preserve"><value>Обновления</value></data>
+  <data name="NotificationsHeader.Text" xml:space="preserve"><value>Уведомления</value></data>
+  <data name="PrivacyHeader.Text" xml:space="preserve"><value>Конфиденциальность</value></data>
+  <data name="AdvancedHeader.Text" xml:space="preserve"><value>Дополнительно</value></data>
+  <data name="AboutHeader.Text" xml:space="preserve"><value>О программе</value></data>
+
+  <!-- InfoBar перезапуска -->
+  <data name="RestartInfoBar.Title" xml:space="preserve"><value>Требуется перезапуск</value></data>
+  <data name="RestartInfoBar.Message" xml:space="preserve"><value>Чтобы изменения вступили в силу, перезапустите приложение.</value></data>
+  <data name="RestartButton.Content" xml:space="preserve"><value>Перезапустить</value></data>
+
+  <!-- Внешний вид -->
+  <data name="ThemeCard.Header" xml:space="preserve"><value>Тема оформления</value></data>
+  <data name="ThemeCard.Description" xml:space="preserve"><value>Светлая, тёмная или как в системе</value></data>
+  <data name="ThemeLightItem.Content" xml:space="preserve"><value>Светлая</value></data>
+  <data name="ThemeDarkItem.Content" xml:space="preserve"><value>Тёмная</value></data>
+  <data name="ThemeSystemItem.Content" xml:space="preserve"><value>Системная</value></data>
+  <data name="AccentCard.Header" xml:space="preserve"><value>Акцентный цвет</value></data>
+  <data name="AccentCard.Description" xml:space="preserve"><value>Основной цвет элементов и индикаторов</value></data>
+  <data name="ReduceMotionCard.Header" xml:space="preserve"><value>Уменьшить анимации</value></data>
+  <data name="ReduceMotionCard.Description" xml:space="preserve"><value>Отключает анимации появления (для слабых ПК)</value></data>
+
+  <!-- Язык и регион -->
+  <data name="LanguageCard.Header" xml:space="preserve"><value>Язык интерфейса</value></data>
+  <data name="LanguageCard.Description" xml:space="preserve"><value>Применяется после перезапуска</value></data>
+  <data name="LangRuItem.Content" xml:space="preserve"><value>Русский</value></data>
+  <data name="LangEnItem.Content" xml:space="preserve"><value>English</value></data>
+  <data name="UnitsCard.Header" xml:space="preserve"><value>Единицы измерения</value></data>
+  <data name="UnitsCard.Description" xml:space="preserve"><value>Используются на экранах телеметрии</value></data>
+  <data name="UnitsMetricItem.Content" xml:space="preserve"><value>Метрические</value></data>
+  <data name="UnitsImperialItem.Content" xml:space="preserve"><value>Имперские</value></data>
+
+  <!-- Запуск и система -->
+  <data name="StartupCard.Header" xml:space="preserve"><value>Запускать вместе с Windows</value></data>
+  <data name="StartupCard.Description" xml:space="preserve"><value>Simryx Hub будет стартовать при входе в систему</value></data>
+  <data name="StartMinimizedCard.Header" xml:space="preserve"><value>Запускать свёрнутым</value></data>
+  <data name="StartMinimizedCard.Description" xml:space="preserve"><value>Окно не будет открываться при автозапуске</value></data>
+  <data name="TrayCard.Header" xml:space="preserve"><value>Сворачивать в трей</value></data>
+  <data name="TrayCard.Description" xml:space="preserve"><value>При закрытии окно скрывается в область уведомлений</value></data>
+
+  <!-- Обновления -->
+  <data name="AutoUpdateCard.Header" xml:space="preserve"><value>Автоматически проверять обновления</value></data>
+  <data name="AutoUpdateCard.Description" xml:space="preserve"><value>Проверка при запуске приложения</value></data>
+  <data name="ChannelCard.Header" xml:space="preserve"><value>Канал обновлений</value></data>
+  <data name="ChannelCard.Description" xml:space="preserve"><value>Стабильный — надёжный, Бета — новые функции раньше</value></data>
+  <data name="ChannelStableItem.Content" xml:space="preserve"><value>Стабильный</value></data>
+  <data name="ChannelBetaItem.Content" xml:space="preserve"><value>Бета</value></data>
+  <data name="VersionCard.Header" xml:space="preserve"><value>Текущая версия</value></data>
+  <data name="CheckUpdatesButton.Content" xml:space="preserve"><value>Проверить сейчас</value></data>
+
+  <!-- Уведомления -->
+  <data name="NotificationsExpander.Header" xml:space="preserve"><value>Показывать уведомления</value></data>
+  <data name="NotificationsExpander.Description" xml:space="preserve"><value>Выберите, о чём сообщать</value></data>
+  <data name="NotifyUpdatesCard.Header" xml:space="preserve"><value>Обновления ПО</value></data>
+  <data name="NotifyDevicesCard.Header" xml:space="preserve"><value>Подключение устройств</value></data>
+  <data name="NotifyFirmwareCard.Header" xml:space="preserve"><value>Обновления прошивки</value></data>
+  <data name="NotifyErrorsCard.Header" xml:space="preserve"><value>Ошибки и предупреждения</value></data>
+
+  <!-- Конфиденциальность -->
+  <data name="StatsCard.Header" xml:space="preserve"><value>Отправлять анонимную статистику</value></data>
+  <data name="StatsCard.Description" xml:space="preserve"><value>Помогает улучшать приложение. Без личных данных</value></data>
+  <data name="CrashCard.Header" xml:space="preserve"><value>Отправлять отчёты о сбоях</value></data>
+  <data name="CrashCard.Description" xml:space="preserve"><value>Автоматически присылать данные об ошибках</value></data>
+
+  <!-- Дополнительно -->
+  <data name="LogsCard.Header" xml:space="preserve"><value>Папка логов</value></data>
+  <data name="LogsCard.Description" xml:space="preserve"><value>Открыть папку с журналами работы приложения</value></data>
+  <data name="OpenLogsButton.Content" xml:space="preserve"><value>Открыть</value></data>
+  <data name="BackupCard.Header" xml:space="preserve"><value>Резервное копирование настроек</value></data>
+  <data name="BackupCard.Description" xml:space="preserve"><value>Экспорт и импорт настроек в файл JSON</value></data>
+  <data name="ExportButton.Content" xml:space="preserve"><value>Экспорт</value></data>
+  <data name="ImportButton.Content" xml:space="preserve"><value>Импорт</value></data>
+  <data name="ResetCard.Header" xml:space="preserve"><value>Сбросить настройки</value></data>
+  <data name="ResetCard.Description" xml:space="preserve"><value>Вернуть все параметры к значениям по умолчанию</value></data>
+  <data name="ResetButton.Content" xml:space="preserve"><value>Сбросить</value></data>
+
+  <!-- О программе -->
+  <data name="AboutExpander.Description" xml:space="preserve"><value>Один хаб для всего сим-рига</value></data>
+  <data name="LicenseCard.Header" xml:space="preserve"><value>Лицензия</value></data>
+  <data name="LicenseCard.Description" xml:space="preserve"><value>Серийный номер и статус активации</value></data>
+  <data name="SiteCard.Header" xml:space="preserve"><value>Сайт</value></data>
+  <data name="SupportCard.Header" xml:space="preserve"><value>Поддержка</value></data>
+  <data name="SupportLink.Content" xml:space="preserve"><value>Открыть</value></data>
+  <data name="ChangelogCard.Header" xml:space="preserve"><value>История изменений</value></data>
+  <data name="ChangelogLink.Content" xml:space="preserve"><value>Открыть</value></data>
+  <data name="LicensesCard.Header" xml:space="preserve"><value>Сторонние лицензии</value></data>
+  <data name="LicensesLink.Content" xml:space="preserve"><value>Открыть</value></data>
+
+  <!-- Подписи переключателей -->
+  <data name="ToggleOn" xml:space="preserve"><value>Вкл</value></data>
+  <data name="ToggleOff" xml:space="preserve"><value>Выкл</value></data>
+
+  <!-- Профили (строки из кода) -->
+  <data name="ProfileFieldName" xml:space="preserve"><value>Название</value></data>
+  <data name="ProfileFieldGame" xml:space="preserve"><value>Игра</value></data>
+  <data name="ProfileFieldSensitivity" xml:space="preserve"><value>Чувствительность</value></data>
+  <data name="ProfileFieldForce" xml:space="preserve"><value>Сила отдачи (FFB)</value></data>
+  <data name="ProfileFieldNotes" xml:space="preserve"><value>Заметки</value></data>
+  <data name="ProfileNamePlaceholder" xml:space="preserve"><value>Например: Кольцевые гонки</value></data>
+  <data name="ProfileGamePlaceholder" xml:space="preserve"><value>Например: Assetto Corsa</value></data>
+  <data name="ProfileCreateTitle" xml:space="preserve"><value>Новый профиль</value></data>
+  <data name="ProfileEditTitle" xml:space="preserve"><value>Редактировать профиль</value></data>
+  <data name="ProfileSave" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="ProfileCancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="ProfileDeleteTitle" xml:space="preserve"><value>Удалить профиль?</value></data>
+  <data name="ProfileDeleteBody" xml:space="preserve"><value>Профиль «{0}» будет удалён. Действие необратимо.</value></data>
+  <data name="ProfileDeleteConfirm" xml:space="preserve"><value>Удалить</value></data>
+  <data name="ProfileDeleteCancel" xml:space="preserve"><value>Отмена</value></data>
+
+  <!-- Строки из кода (плоские ключи) -->
+  <data name="VersionFormat" xml:space="preserve"><value>Версия {0}</value></data>
+  <data name="LicenseInactive" xml:space="preserve"><value>Не активировано (демо-режим)</value></data>
+  <data name="StatusStartupFailed" xml:space="preserve"><value>Не удалось изменить автозапуск.</value></data>
+  <data name="StatusTrayLater" xml:space="preserve"><value>Значок в трее появится в одном из следующих обновлений.</value></data>
+  <data name="StatusUpdateLater" xml:space="preserve"><value>Сервер обновлений ещё не подключён — проверка появится позже.</value></data>
+  <data name="StatusExportNoFile" xml:space="preserve"><value>Файл настроек ещё не создан — измените любую настройку и повторите.</value></data>
+  <data name="StatusExported" xml:space="preserve"><value>Настройки экспортированы.</value></data>
+  <data name="StatusImported" xml:space="preserve"><value>Настройки импортированы. Перезапустите приложение.</value></data>
+  <data name="ResetTitle" xml:space="preserve"><value>Сбросить настройки?</value></data>
+  <data name="ResetBody" xml:space="preserve"><value>Все настройки вернутся к значениям по умолчанию. Действие необратимо.</value></data>
+  <data name="ResetPrimary" xml:space="preserve"><value>Сбросить</value></data>
+  <data name="ResetClose" xml:space="preserve"><value>Отмена</value></data>
+  <data name="ProfilePriorityChip.Text" xml:space="preserve">
+  <value>Приоритетный</value>
+</data>
+<data name="ProfileSetPriority.Text" xml:space="preserve">
+  <value>В приоритет</value>
+</data>
+<data name="ProfileEditorNewTitle" xml:space="preserve">
+  <value>Новый профиль</value>
+</data>
+<data name="ProfileEditorEditTitle" xml:space="preserve">
+  <value>Редактирование профиля</value>
+</data>
+<data name="ProfileEditorName" xml:space="preserve">
+  <value>Название</value>
+</data>
+<data name="ProfileEditorNamePlaceholder" xml:space="preserve">
+  <value>Например: Кольцевые гонки</value>
+</data>
+<data name="ProfileEditorGame" xml:space="preserve">
+  <value>Игра</value>
+</data>
+<data name="ProfileEditorGamePlaceholder" xml:space="preserve">
+  <value>Выберите игру</value>
+</data>
+<data name="ProfileEditorSensitivity" xml:space="preserve">
+  <value>Чувствительность</value>
+</data>
+<data name="ProfileEditorForce" xml:space="preserve">
+  <value>Сила отдачи (FFB)</value>
+</data>
+<data name="ProfileEditorNotes" xml:space="preserve">
+  <value>Заметки</value>
+</data>
+<data name="ProfileEditorSave" xml:space="preserve">
+  <value>Сохранить</value>
+</data>
+<data name="ProfileEditorCancel" xml:space="preserve">
+  <value>Отмена</value>
+</data>
+</root>

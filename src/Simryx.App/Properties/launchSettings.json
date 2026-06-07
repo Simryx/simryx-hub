@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Simryx.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Simryx.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

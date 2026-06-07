@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Simryx.App.Views.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:svc="using:Simryx.App.Services">
+
+    <!-- КЛЮЧЕВОЕ ОТЛИЧИЕ ОТ СТАРОЙ ВЕРСИИ:
+         НЕТ Padding на ScrollViewer (он обрезал hover-увеличение по линии Padding).
+         Отступы перенесены в Margin StackPanel => клип уходит на край окна,
+         у плиток появляется запас 32px, и при наведении край не срезается. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="980" Spacing="24" Margin="32,28,32,32">
+
+            <!-- Приветствие -->
+            <StackPanel Spacing="4">
+                <TextBlock x:Uid="DashboardWelcome" Style="{StaticResource TitleTextBlockStyle}" />
+                <TextBlock x:Uid="DashboardHint"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Индикаторы статуса -->
+            <StackPanel Spacing="12">
+                <TextBlock x:Uid="DashboardStatus" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="Tile1" Grid.Column="0" svc:MicroInteractions.IsEnabled="True"
+                            Background="{ThemeResource SimryxCardBrush}"
+                            BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="8">
+                            <FontIcon Glyph="&#xE975;" FontSize="22" HorizontalAlignment="Left"
+                                      Foreground="{ThemeResource SimryxAccentBrush}" />
+                            <TextBlock x:Uid="StatusDevicesLabel"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="StatusDevicesValue" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="Tile2" Grid.Column="1" svc:MicroInteractions.IsEnabled="True"
+                            Background="{ThemeResource SimryxCardBrush}"
+                            BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="8">
+                            <FontIcon Glyph="&#xE7FC;" FontSize="22" HorizontalAlignment="Left"
+                                      Foreground="{ThemeResource SimryxAccentBrush}" />
+                            <TextBlock x:Uid="CardGameTitle"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="StatusGameValue" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="Tile3" Grid.Column="2" svc:MicroInteractions.IsEnabled="True"
+                            Background="{ThemeResource SimryxCardBrush}"
+                            BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="8">
+                            <FontIcon Glyph="&#xE77B;" FontSize="22" HorizontalAlignment="Left"
+                                      Foreground="{ThemeResource SimryxAccentBrush}" />
+                            <TextBlock x:Uid="CardProfileTitle"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="StatusProfileValue" Style="{StaticResource BodyStrongTextBlockStyle}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="Tile4" Grid.Column="3" svc:MicroInteractions.IsEnabled="True"
+                            Background="{ThemeResource SimryxCardBrush}"
+                            BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                            BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel Spacing="8">
+                            <FontIcon Glyph="&#xE895;" FontSize="22" HorizontalAlignment="Left"
+                                      Foreground="{ThemeResource SimryxAccentBrush}" />
+                            <TextBlock x:Uid="StatusUpdatesLabel"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="StatusUpdatesValue" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+
+            <!-- Быстрые действия (без Настроек — они в левом меню) -->
+            <StackPanel Spacing="12">
+                <TextBlock x:Uid="DashboardQuickActions" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <Grid x:Name="ActionsPanel" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Padding="12,14" Click="Profiles_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <FontIcon Glyph="&#xE716;" FontSize="18" />
+                            <TextBlock x:Uid="QuickProfilesLabel" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Padding="12,14" Click="Updates_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <FontIcon Glyph="&#xE895;" FontSize="18" />
+                            <TextBlock x:Uid="QuickUpdatesLabel" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Padding="12,14" Click="Logs_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <FontIcon Glyph="&#xE8B7;" FontSize="18" />
+                            <TextBlock x:Uid="QuickLogsLabel" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <InfoBar x:Name="UpdateInfoBar" x:Uid="UpdateInfoBar"
+                         Severity="Success" IsOpen="False" IsClosable="True" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

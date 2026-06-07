@@ -1,0 +1,29 @@
+## Сборка
+bin/
+obj/
+artifacts/
+build/out/
+
+## Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+## Тесты
+TestResults/
+
+## Пакеты MSIX/AppX (инсталлятор)
+AppPackages/
+BundleArtifacts/
+*.appx
+*.msix
+*.msixbundle
+*.msixupload
+*.cer
+*.pfx
+
+## Прочее
+*.log
+.DS_Store
