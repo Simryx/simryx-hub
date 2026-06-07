@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -107,6 +108,7 @@ public sealed class UpdateService
             DownloadUrl = asset?.DownloadUrl,
             AssetName = asset?.Name,
             AssetSize = asset?.Size ?? 0,
+            Sha256 = ExtractSha256(r.Body, asset?.Name),
             IsPrerelease = r.Prerelease,
             PublishedAt = r.PublishedAt,
         };
@@ -127,6 +129,35 @@ public sealed class UpdateService
                    && Ends(a, ".exe"))
             ?? assets.FirstOrDefault(a => Ends(a, ".exe"))
             ?? assets.FirstOrDefault(a => Ends(a, ".zip"));
+    }
+
+    /// <summary>
+    /// Ищем SHA-256 установщика в теле релиза. Поддерживается формат sha256sum
+    /// (строка вида "&lt;64-hex&gt;  имя_файла"); если имя файла указано — берём точное
+    /// совпадение, иначе — первый найденный 64-символьный hex как запасной вариант.
+    /// </summary>
+    private static string? ExtractSha256(string? body, string? assetName)
+    {
+        if (string.IsNullOrWhiteSpace(body)) return null;
+
+        string? fallback = null;
+        foreach (var raw in body.Split('\n'))
+        {
+            var line = raw.Trim();
+            if (line.Length == 0) continue;
+
+            var m = Regex.Match(line, "(?<![A-Fa-f0-9])([A-Fa-f0-9]{64})(?![A-Fa-f0-9])");
+            if (!m.Success) continue;
+
+            var hash = m.Groups[1].Value.ToLowerInvariant();
+
+            if (!string.IsNullOrEmpty(assetName) &&
+                line.Contains(assetName!, StringComparison.OrdinalIgnoreCase))
+                return hash; // точное совпадение по имени файла
+
+            fallback ??= hash;
+        }
+        return fallback;
     }
 
     /// <summary>"v0.2.0" / "0.2.0-beta.1" -> Version(0,2,0,0). Пре-релиз/билд-метаданные отбрасываются.</summary>

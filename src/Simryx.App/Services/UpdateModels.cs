@@ -28,6 +28,7 @@ public sealed class UpdateInfo
     public string? DownloadUrl { get; init; }                  // прямая ссылка на установщик
     public string? AssetName { get; init; }                    // имя файла установщика
     public long AssetSize { get; init; }                       // размер, байт
+    public string? Sha256 { get; init; }                       // контрольная сумма установщика (если опубликована в заметках)
     public bool IsPrerelease { get; init; }
     public DateTimeOffset? PublishedAt { get; init; }
 }
@@ -41,4 +42,35 @@ public sealed class UpdateCheckResult
     public string? Error { get; init; }
 
     public bool HasUpdate => Status == UpdateStatus.UpdateAvailable && Info is not null;
+}
+
+// ===== Часть 3: загрузка и установка =====
+
+/// <summary>Прогресс загрузки установщика.</summary>
+public sealed class UpdateDownloadProgress
+{
+    public long BytesReceived { get; init; }
+    public long TotalBytes { get; init; }
+
+    public double Fraction => TotalBytes > 0 ? Math.Clamp((double)BytesReceived / TotalBytes, 0, 1) : 0;
+    public int Percent => (int)Math.Round(Fraction * 100);
+}
+
+/// <summary>Итог загрузки установщика.</summary>
+public enum UpdateDownloadStatus
+{
+    Completed,
+    IntegrityFailed,
+    Failed,
+    Canceled,
+}
+
+/// <summary>Результат загрузки: статус + путь к файлу + ошибка.</summary>
+public sealed class UpdateDownloadResult
+{
+    public UpdateDownloadStatus Status { get; init; }
+    public string? FilePath { get; init; }
+    public string? Error { get; init; }
+
+    public bool Success => Status == UpdateDownloadStatus.Completed && !string.IsNullOrEmpty(FilePath);
 }

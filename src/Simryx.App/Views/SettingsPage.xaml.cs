@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,6 +17,7 @@ namespace Simryx.App.Views;
 public sealed partial class SettingsPage : Page
 {
     private bool _loaded;
+    private bool _updateChecking; // Часть 5: защита от наложения проверок
     private readonly ResourceLoader _res = new();
     private readonly ILocalSettingsService _settings = App.Services.GetRequiredService<ILocalSettingsService>();
     private readonly IThemeSelectorService _theme = App.Services.GetRequiredService<IThemeSelectorService>();
@@ -24,8 +26,12 @@ public sealed partial class SettingsPage : Page
     private static string SettingsDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "Simryx", "Simryx Hub");
+
     private static string SettingsFile => Path.Combine(SettingsDir, "settings.json");
     private static string LogsDir => Path.Combine(SettingsDir, "logs");
+
+    private bool IsEnglish =>
+        (_settings.Read<string>("AppLanguage") ?? "ru-RU").StartsWith("en", StringComparison.OrdinalIgnoreCase);
 
     public SettingsPage()
     {
@@ -92,14 +98,12 @@ public sealed partial class SettingsPage : Page
     {
         var on = _res.GetString("ToggleOn");
         var off = _res.GetString("ToggleOff");
-
         var toggles = new[]
         {
             ReduceMotionToggle, StartupToggle, StartMinimizedToggle, TrayToggle,
             AutoUpdateToggle, NotifyUpdatesToggle, NotifyDevicesToggle,
             NotifyFirmwareToggle, NotifyErrorsToggle, StatsToggle, CrashToggle,
         };
-
         foreach (var t in toggles)
         {
             t.OnContent = on;
@@ -108,6 +112,7 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Внешний вид =====
+
     private void ThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
@@ -128,6 +133,7 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Язык и регион =====
+
     private void Language_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
@@ -144,6 +150,7 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Запуск и система =====
+
     private void Startup_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_loaded) return;
@@ -175,17 +182,136 @@ public sealed partial class SettingsPage : Page
         }
     }
 
-    // ===== Обновления =====
-    private void Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    // ===== Обновления (Часть 2 + 3 + 5) =====
+
+    private async void Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
+
+        // Часть 5: сохраняем выбранный канал — единый источник правды для всех проверок.
         _settings.Save("UpdateChannel", ChannelCombo.SelectedIndex == 1 ? "Beta" : "Stable");
+
+        // Канал сменился: сбрасываем устаревший кэш тихой авто-проверки,
+        // чтобы на Главной не висел баннер из прошлого канала, и сразу
+        // перепроверяем в новом канале для мгновенной обратной связи.
+        UpdateCoordinator.ResetSession();
+        await RunUpdateCheckAsync();
     }
 
-    private void CheckUpdates_Click(object sender, RoutedEventArgs e)
-        => ShowStatus(_res.GetString("StatusUpdateLater"));
+    private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+        => await RunUpdateCheckAsync();
+
+    // Текущий канал из настройки (единый разбор).
+    private UpdateChannel ReadChannel() =>
+        (_settings.Read<string>("UpdateChannel") ?? "Stable")
+            .Equals("Beta", StringComparison.OrdinalIgnoreCase)
+            ? UpdateChannel.Beta
+            : UpdateChannel.Stable;
+
+    // Общая проверка обновлений: используется и кнопкой, и сменой канала.
+    private async Task RunUpdateCheckAsync()
+    {
+        if (_updateChecking) return; // не запускаем параллельные проверки/диалоги
+        _updateChecking = true;
+
+        var en = IsEnglish;
+        CheckUpdatesBtn.IsEnabled = false;
+        ShowStatus(InfoBarSeverity.Informational,
+            string.Empty,
+            en ? "Checking for updates…" : "Проверяем обновления…");
+        try
+        {
+            var result = await new UpdateService().CheckForUpdatesAsync(ReadChannel());
+            await ApplyUpdateResultAsync(result, en);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error,
+                en ? "Update check failed" : "Ошибка проверки обновлений",
+                ex.Message);
+        }
+        finally
+        {
+            CheckUpdatesBtn.IsEnabled = true;
+            _updateChecking = false;
+        }
+    }
+
+    private async Task ApplyUpdateResultAsync(UpdateCheckResult result, bool en)
+    {
+        switch (result.Status)
+        {
+            case UpdateStatus.UpdateAvailable when result.Info is not null:
+            {
+                StatusInfoBar.IsOpen = false;
+                var info = result.Info;
+                var hasInstaller = !string.IsNullOrWhiteSpace(info.DownloadUrl);
+                var dialog = new ContentDialog
+                {
+                    Title = en ? $"Version {info.Version} is available"
+                               : $"Доступна версия {info.Version}",
+                    Content = BuildNotesContent(info, en),
+                    CloseButtonText = en ? "Later" : "Позже",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = XamlRoot,
+                    RequestedTheme = ActualTheme,
+                };
+                if (hasInstaller)
+                {
+                    dialog.PrimaryButtonText = en ? "Update now" : "Обновить сейчас";
+                    dialog.SecondaryButtonText = en ? "Release page" : "Страница релиза";
+                }
+                else
+                {
+                    dialog.PrimaryButtonText = en ? "Open release page" : "Открыть страницу релиза";
+                }
+
+                var choice = await dialog.ShowAsync();
+                if (hasInstaller)
+                {
+                    if (choice == ContentDialogResult.Primary)
+                        await UpdateFlow.RunAsync(info, XamlRoot, en, ActualTheme);
+                    else if (choice == ContentDialogResult.Secondary && !string.IsNullOrWhiteSpace(info.ReleaseUrl))
+                        await Launcher.LaunchUriAsync(new Uri(info.ReleaseUrl));
+                }
+                else if (choice == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(info.ReleaseUrl))
+                {
+                    await Launcher.LaunchUriAsync(new Uri(info.ReleaseUrl));
+                }
+                break;
+            }
+            case UpdateStatus.Failed:
+                ShowStatus(InfoBarSeverity.Error,
+                    en ? "Update check failed" : "Ошибка проверки обновлений",
+                    result.Error ?? string.Empty);
+                break;
+            default:
+                ShowStatus(InfoBarSeverity.Success,
+                    en ? "You're up to date" : "Установлена последняя версия",
+                    string.Empty);
+                break;
+        }
+    }
+
+    private static UIElement BuildNotesContent(UpdateInfo info, bool en)
+    {
+        var text = new TextBlock
+        {
+            Text = string.IsNullOrWhiteSpace(info.ReleaseNotes)
+                ? (en ? "No release notes." : "Заметки к релизу отсутствуют.")
+                : info.ReleaseNotes,
+            TextWrapping = TextWrapping.Wrap,
+            IsTextSelectionEnabled = true,
+        };
+        return new ScrollViewer
+        {
+            MaxHeight = 360,
+            Content = text,
+        };
+    }
 
     // ===== Дополнительно =====
+
     private async void OpenLogs_Click(object sender, RoutedEventArgs e)
     {
         Directory.CreateDirectory(LogsDir);
@@ -244,8 +370,8 @@ public sealed partial class SettingsPage : Page
             CloseButtonText = _res.GetString("ResetClose"),
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot,
+            RequestedTheme = ActualTheme,
         };
-
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
         if (File.Exists(SettingsFile)) File.Delete(SettingsFile);
@@ -253,6 +379,7 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== О программе =====
+
     private async void Link_Click(object sender, RoutedEventArgs e)
     {
         if (sender is HyperlinkButton btn && btn.Tag is string url)
@@ -262,11 +389,17 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Вспомогательное =====
+
     private void Restart_Click(object sender, RoutedEventArgs e)
         => Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
 
     private void ShowStatus(string message)
+        => ShowStatus(InfoBarSeverity.Informational, string.Empty, message);
+
+    private void ShowStatus(InfoBarSeverity severity, string title, string message)
     {
+        StatusInfoBar.Severity = severity;
+        StatusInfoBar.Title = title;
         StatusInfoBar.Message = message;
         StatusInfoBar.IsOpen = true;
     }

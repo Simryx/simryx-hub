@@ -15,14 +15,20 @@ public sealed partial class DashboardPage : Page
 {
     private readonly IThemeSelectorService _theme;
     private readonly ILocalizationService _localization;
+    private readonly ILocalSettingsService _settings;
     private readonly ProfileService _profiles = new();
     private bool _loaded;
+    private UpdateInfo? _pendingUpdate;
+
+    private bool IsEnglish =>
+        (_localization.CurrentLanguage ?? string.Empty).StartsWith("en", StringComparison.OrdinalIgnoreCase);
 
     public DashboardPage()
     {
         InitializeComponent();
         _theme = App.Services.GetRequiredService<IThemeSelectorService>();
         _localization = App.Services.GetRequiredService<ILocalizationService>();
+        _settings = App.Services.GetRequiredService<ILocalSettingsService>();
         Loading += OnLoading;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
@@ -43,7 +49,18 @@ public sealed partial class DashboardPage : Page
         ProfileService.ActiveChanged -= OnActiveProfileChanged;
         ProfileService.ActiveChanged += OnActiveProfileChanged;
 
+        // ── Часть 4: тихая авто-проверка обновлений при запуске ──
+        UpdateCoordinator.UpdateFound -= OnAutoUpdateFound;
+        UpdateCoordinator.UpdateFound += OnAutoUpdateFound;
+
         PopulateStatus();
+
+        // Если фоновая проверка уже нашла обновление раньше в этой сессии — показываем сразу.
+        if (UpdateCoordinator.LastAvailable is { } cachedUpdate)
+            ApplyUpdateResult(cachedUpdate, IsEnglish);
+
+        // Запускаем фоновую проверку (фактически выполнится один раз за сессию). Fire-and-forget.
+        _ = UpdateCoordinator.RunStartupCheckAsync();
 
         if (MotionService.Reduced) return;
 
@@ -55,6 +72,9 @@ public sealed partial class DashboardPage : Page
     {
         _loaded = false;
         ProfileService.ActiveChanged -= OnActiveProfileChanged;
+
+        // ── Часть 4: снимаем подписку, чтобы не текло статическое событие ──
+        UpdateCoordinator.UpdateFound -= OnAutoUpdateFound;
     }
 
     private void OnActiveProfileChanged()
@@ -67,11 +87,19 @@ public sealed partial class DashboardPage : Page
         });
     }
 
+    // ── Часть 4: колбэк тихой авто-проверки (может прийти из фонового потока) ──
+    private void OnAutoUpdateFound(object? sender, UpdateCheckResult result)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (!_loaded) return;          // страница уже выгружена — игнорируем
+            ApplyUpdateResult(result, IsEnglish); // тот же путь, что и у ручной проверки
+        });
+    }
+
     private void PopulateStatus()
     {
-        bool en = (_localization.CurrentLanguage ?? string.Empty)
-            .StartsWith("en", StringComparison.OrdinalIgnoreCase);
-
+        var en = IsEnglish;
         StatusDevicesValue.Text = en ? "5 (demo)" : "5 (демо)";
         StatusGameValue.Text = en ? "Not running" : "Не запущена";
 
@@ -80,11 +108,115 @@ public sealed partial class DashboardPage : Page
             ? active.Name
             : (en ? "Not selected" : "Не выбран");
 
-        StatusUpdatesValue.Text = en ? "Up to date (demo)" : "Актуально (демо)";
+        StatusUpdatesValue.Text = en ? "Not checked" : "Не проверялось";
     }
 
     private void Profiles_Click(object sender, RoutedEventArgs e) => NavigateTo("Profiles");
-    private void Updates_Click(object sender, RoutedEventArgs e) => UpdateInfoBar.IsOpen = true;
+
+    // ===== Обновления (Часть 2 + 3 + 4) =====
+
+    private async void Updates_Click(object sender, RoutedEventArgs e)
+    {
+        var en = IsEnglish;
+        CheckUpdatesQuickBtn.IsEnabled = false;
+        _pendingUpdate = null;
+        StatusUpdatesValue.Text = en ? "Checking…" : "Проверка…";
+        try
+        {
+            var channel = (_settings.Read<string>("UpdateChannel") ?? "Stable")
+                .Equals("Beta", StringComparison.OrdinalIgnoreCase)
+                ? UpdateChannel.Beta
+                : UpdateChannel.Stable;
+
+            var result = await new UpdateService().CheckForUpdatesAsync(channel);
+            ApplyUpdateResult(result, en);
+        }
+        catch (Exception ex)
+        {
+            StatusUpdatesValue.Text = en ? "Check error" : "Ошибка проверки";
+            ShowUpdateBar(InfoBarSeverity.Error,
+                en ? "Update check failed" : "Ошибка проверки обновлений",
+                ex.Message);
+        }
+        finally
+        {
+            CheckUpdatesQuickBtn.IsEnabled = true;
+        }
+    }
+
+    private void ApplyUpdateResult(UpdateCheckResult result, bool en)
+    {
+        switch (result.Status)
+        {
+            case UpdateStatus.UpdateAvailable when result.Info is not null:
+            {
+                _pendingUpdate = result.Info;
+                var hasInstaller = !string.IsNullOrWhiteSpace(result.Info.DownloadUrl);
+                StatusUpdatesValue.Text = en ? $"Available {result.Info.Version}"
+                                             : $"Доступна {result.Info.Version}";
+                var action = hasInstaller
+                    ? (en ? "Update now" : "Обновить сейчас")
+                    : (en ? "Open release page" : "Открыть страницу релиза");
+                ShowUpdateBar(InfoBarSeverity.Informational,
+                    en ? $"Version {result.Info.Version} is available"
+                       : $"Доступна версия {result.Info.Version}",
+                    Truncate(result.Info.ReleaseNotes, 400),
+                    action);
+                break;
+            }
+            case UpdateStatus.Failed:
+                StatusUpdatesValue.Text = en ? "Check error" : "Ошибка проверки";
+                ShowUpdateBar(InfoBarSeverity.Error,
+                    en ? "Update check failed" : "Ошибка проверки обновлений",
+                    result.Error ?? string.Empty);
+                break;
+            default:
+                StatusUpdatesValue.Text = en ? "Up to date" : "Актуально";
+                ShowUpdateBar(InfoBarSeverity.Success,
+                    en ? "You're up to date" : "Установлена последняя версия",
+                    en ? $"Current version: {result.CurrentVersion.ToString(3)}"
+                       : $"Текущая версия: {result.CurrentVersion.ToString(3)}");
+                break;
+        }
+    }
+
+    private void ShowUpdateBar(InfoBarSeverity severity, string title, string message, string? actionText = null)
+    {
+        UpdateInfoBar.Severity = severity;
+        UpdateInfoBar.Title = title;
+        UpdateInfoBar.Message = message;
+
+        var showAction = !string.IsNullOrEmpty(actionText) && _pendingUpdate is not null;
+        if (showAction)
+        {
+            UpdateActionButton.Content = actionText;
+            UpdateActionButton.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            UpdateActionButton.Visibility = Visibility.Collapsed;
+        }
+
+        UpdateInfoBar.IsOpen = true;
+    }
+
+    private async void UpdateAction_Click(object sender, RoutedEventArgs e)
+    {
+        var info = _pendingUpdate;
+        if (info is null) return;
+
+        if (!string.IsNullOrWhiteSpace(info.DownloadUrl))
+            await UpdateFlow.RunAsync(info, XamlRoot, IsEnglish, ActualTheme);
+        else if (!string.IsNullOrWhiteSpace(info.ReleaseUrl))
+            await Launcher.LaunchUriAsync(new Uri(info.ReleaseUrl));
+    }
+
+    private static string Truncate(string? text, int max)
+    {
+        if (string.IsNullOrEmpty(text)) return string.Empty;
+        text = text.Trim();
+        return text.Length <= max ? text : text.Substring(0, max).TrimEnd() + "…";
+    }
 
     private async void Logs_Click(object sender, RoutedEventArgs e)
     {
@@ -107,6 +239,7 @@ public sealed partial class DashboardPage : Page
     {
         var nav = FindAncestor<NavigationView>(this);
         if (nav is null) return;
+
         var item = nav.MenuItems.Concat(nav.FooterMenuItems)
             .OfType<NavigationViewItem>()
             .FirstOrDefault(i => (i.Tag as string) == tag);

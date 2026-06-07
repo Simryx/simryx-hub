@@ -46,25 +46,20 @@ public sealed partial class ProfilesPage : Page
     private void Refresh()
     {
         Groups.Clear();
-
         var all = _service.GetAll();
         var priorities = _service.GetPriorities();
-
         var grouped = all
             .GroupBy(GameCatalog.ResolveGameId)
             .OrderBy(g => GameNameFor(g.Key), StringComparer.CurrentCultureIgnoreCase);
-
         foreach (var group in grouped)
         {
             var gameId = group.Key;
             priorities.TryGetValue(gameId, out var priorityId);
-
             var gg = new GameGroup
             {
                 GameId = gameId,
                 GameName = GameNameFor(gameId),
             };
-
             foreach (var profile in group
                          .OrderByDescending(p => p.Id == priorityId)
                          .ThenBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase))
@@ -72,14 +67,12 @@ public sealed partial class ProfilesPage : Page
                 profile.IsPriority = profile.Id == priorityId;
                 gg.Profiles.Add(profile);
             }
-
             Groups.Add(gg);
         }
 
         var any = Groups.Count > 0;
         GroupsScroll.Visibility = any ? Visibility.Visible : Visibility.Collapsed;
         EmptyState.Visibility = any ? Visibility.Collapsed : Visibility.Visible;
-
         if (any && !MotionService.Reduced)
             EntranceAnimations.Play(GroupsScroll);
     }
@@ -88,7 +81,6 @@ public sealed partial class ProfilesPage : Page
         => GameCatalog.FindById(gameId)?.Name ?? gameId;
 
     // ===== Раскрытие/сворачивание группы (переключает только кнопка-стрелка) =====
-
     private void ToggleGroup_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement button) return;
@@ -100,7 +92,6 @@ public sealed partial class ProfilesPage : Page
         if (content is null) return;
 
         var chevron = FindByTag(button, "chevron");
-
         group.IsExpanded = !group.IsExpanded;
         AnimateGroup(content, chevron, group.IsExpanded);
     }
@@ -116,7 +107,6 @@ public sealed partial class ProfilesPage : Page
                 chevron.RenderTransformOrigin = new Point(0.5, 0.5);
                 chevron.RenderTransform = rotate;
             }
-
             var targetAngle = expand ? 0d : 180d;
             if (MotionService.Reduced) rotate.Angle = targetAngle;
             else AnimateChevron(rotate, targetAngle);
@@ -143,12 +133,10 @@ public sealed partial class ProfilesPage : Page
         if (expand)
         {
             content.Visibility = Visibility.Visible;
-
             content.Height = double.NaN;
             var availableWidth = double.PositiveInfinity;
             if (content.Parent is FrameworkElement parent && parent.ActualWidth > 0)
                 availableWidth = Math.Max(0, parent.ActualWidth - content.Margin.Left - content.Margin.Right);
-
             content.Measure(new Size(availableWidth, double.PositiveInfinity));
             to = content.DesiredSize.Height;
             from = wasAnimating ? currentHeight : 0;
@@ -187,7 +175,6 @@ public sealed partial class ProfilesPage : Page
         storyboard.Children.Add(fadeAnim);
 
         _heightAnimations[content] = storyboard;
-
         storyboard.Completed += (_, _) =>
         {
             _heightAnimations.Remove(content);
@@ -202,7 +189,6 @@ public sealed partial class ProfilesPage : Page
                 content.Height = 0;
             }
         };
-
         storyboard.Begin();
     }
 
@@ -222,7 +208,6 @@ public sealed partial class ProfilesPage : Page
     }
 
     // ===== Приоритет (плавная перестановка приёмом FLIP) =====
-
     private void SetPriority_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.Tag is not RacingProfile profile) return;
@@ -276,12 +261,10 @@ public sealed partial class ProfilesPage : Page
         {
             if (listView.ContainerFromItem(item) is not UIElement container) continue;
             if (!oldPositions.TryGetValue(item, out var oldY)) continue;
-
             var newY = container.TransformToVisual(listView)
                                 .TransformPoint(new Point(0, 0)).Y;
             var delta = oldY - newY;
             if (Math.Abs(delta) < 0.5) continue;
-
             AnimateTranslateFrom(container, delta);
         }
     }
@@ -293,7 +276,6 @@ public sealed partial class ProfilesPage : Page
             transform = new TranslateTransform();
             element.RenderTransform = transform;
         }
-
         transform.Y = fromOffsetY;
 
         var storyboard = new Storyboard();
@@ -311,7 +293,6 @@ public sealed partial class ProfilesPage : Page
     }
 
     // ===== CRUD =====
-
     private async void Add_Click(object sender, RoutedEventArgs e)
     {
         var profile = new RacingProfile();
@@ -325,7 +306,6 @@ public sealed partial class ProfilesPage : Page
     private async void Edit_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.Tag is not RacingProfile profile) return;
-
         var draft = Clone(profile);
         if (await ShowEditorAsync(draft, isNew: false))
         {
@@ -362,7 +342,6 @@ public sealed partial class ProfilesPage : Page
             PlaceholderText = _res.GetString("ProfileEditorNamePlaceholder"),
             Text = profile.Name,
         };
-
         var gameCombo = new ComboBox
         {
             Header = _res.GetString("ProfileEditorGame"),
@@ -381,7 +360,6 @@ public sealed partial class ProfilesPage : Page
             Maximum = 100,
             Value = profile.Sensitivity,
         };
-
         var forceSlider = new Slider
         {
             Header = _res.GetString("ProfileEditorForce"),
@@ -389,7 +367,6 @@ public sealed partial class ProfilesPage : Page
             Maximum = 100,
             Value = profile.ForceFeedback,
         };
-
         var notesBox = new TextBox
         {
             Header = _res.GetString("ProfileEditorNotes"),
@@ -419,7 +396,6 @@ public sealed partial class ProfilesPage : Page
             Content = panel,
             IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(profile.Name),
         };
-
         nameBox.TextChanged += (_, _) =>
             dialog.IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(nameBox.Text);
 
@@ -438,7 +414,6 @@ public sealed partial class ProfilesPage : Page
     }
 
     // ===== Хелперы дерева =====
-
     private static FrameworkElement? FindByTag(DependencyObject root, string tag)
     {
         var count = VisualTreeHelper.GetChildrenCount(root);
@@ -447,7 +422,6 @@ public sealed partial class ProfilesPage : Page
             var child = VisualTreeHelper.GetChild(root, i);
             if (child is FrameworkElement fe && fe.Tag as string == tag)
                 return fe;
-
             var nested = FindByTag(child, tag);
             if (nested is not null) return nested;
         }

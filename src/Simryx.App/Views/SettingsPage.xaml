@@ -7,24 +7,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
     <ScrollViewer Padding="32,24,32,40">
         <StackPanel Spacing="6" MaxWidth="880" HorizontalAlignment="Stretch">
-
             <TextBlock x:Uid="SettingsTitle" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,8" />
-
             <InfoBar x:Name="RestartInfoBar" x:Uid="RestartInfoBar"
                      IsOpen="False" IsClosable="True" Severity="Informational">
                 <InfoBar.ActionButton>
                     <Button x:Uid="RestartButton" Click="Restart_Click" />
                 </InfoBar.ActionButton>
             </InfoBar>
-
             <InfoBar x:Name="StatusInfoBar" IsOpen="False" IsClosable="True" Severity="Informational" />
-
-            <!-- 🎨 Внешний вид -->
+            <!-- Внешний вид -->
             <TextBlock x:Uid="AppearanceHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="ThemeCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE771;" /></ctk:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="ThemeCombo" MinWidth="170" SelectionChanged="ThemeCombo_SelectionChanged">
@@ -33,15 +27,12 @@
                     <ComboBoxItem x:Uid="ThemeSystemItem" />
                 </ComboBox>
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="ReduceMotionCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE916;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="ReduceMotionToggle" Toggled="ReduceMotion_Toggled" />
             </ctk:SettingsCard>
-
-            <!-- 🌐 Язык и регион -->
+            <!-- Язык и регион -->
             <TextBlock x:Uid="LanguageRegionHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="LanguageCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xF2B7;" /></ctk:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="LanguageCombo" MinWidth="170" SelectionChanged="Language_SelectionChanged">
@@ -49,7 +40,6 @@
                     <ComboBoxItem x:Uid="LangEnItem" />
                 </ComboBox>
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="UnitsCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE9D9;" /></ctk:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="UnitsCombo" MinWidth="170" SelectionChanged="Units_SelectionChanged">
@@ -57,33 +47,26 @@
                     <ComboBoxItem x:Uid="UnitsImperialItem" />
                 </ComboBox>
             </ctk:SettingsCard>
-
-            <!-- 🚀 Запуск и система -->
+            <!-- Запуск и система -->
             <TextBlock x:Uid="StartupHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="StartupCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE7E8;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="StartupToggle" Toggled="Startup_Toggled" />
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="StartMinimizedCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE921;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="StartMinimizedToggle" Tag="StartMinimized" Toggled="PersistToggle_Toggled" />
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="TrayCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE700;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="TrayToggle" Toggled="Tray_Toggled" />
             </ctk:SettingsCard>
-
-            <!-- 🔄 Обновления -->
+            <!-- Обновления -->
             <TextBlock x:Uid="UpdatesHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="AutoUpdateCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE777;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="AutoUpdateToggle" Tag="AutoCheckUpdates" Toggled="PersistToggle_Toggled" />
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="ChannelCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xECC5;" /></ctk:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="ChannelCombo" MinWidth="170" SelectionChanged="Channel_SelectionChanged">
@@ -91,19 +74,16 @@
                     <ComboBoxItem x:Uid="ChannelBetaItem" />
                 </ComboBox>
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="VersionCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE895;" /></ctk:SettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                     <TextBlock x:Name="VersionText" VerticalAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <Button x:Uid="CheckUpdatesButton" Click="CheckUpdates_Click" />
+                    <Button x:Name="CheckUpdatesBtn" x:Uid="CheckUpdatesButton" Click="CheckUpdates_Click" />
                 </StackPanel>
             </ctk:SettingsCard>
-
-            <!-- 🔔 Уведомления -->
+            <!-- Уведомления -->
             <TextBlock x:Uid="NotificationsHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsExpander x:Uid="NotificationsExpander">
                 <ctk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE7ED;" /></ctk:SettingsExpander.HeaderIcon>
                 <ctk:SettingsExpander.Items>
@@ -121,28 +101,22 @@
                     </ctk:SettingsCard>
                 </ctk:SettingsExpander.Items>
             </ctk:SettingsExpander>
-
-            <!-- 🔒 Конфиденциальность -->
+            <!-- Конфиденциальность -->
             <TextBlock x:Uid="PrivacyHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="StatsCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE9D2;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="StatsToggle" Tag="AnonymousStats" Toggled="PersistToggle_Toggled" />
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="CrashCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE730;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="CrashToggle" Tag="CrashReports" Toggled="PersistToggle_Toggled" />
             </ctk:SettingsCard>
-
-            <!-- 🧰 Дополнительно -->
+            <!-- Дополнительно -->
             <TextBlock x:Uid="AdvancedHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsCard x:Uid="LogsCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE8A5;" /></ctk:SettingsCard.HeaderIcon>
                 <Button x:Uid="OpenLogsButton" Click="OpenLogs_Click" />
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="BackupCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE74E;" /></ctk:SettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -150,15 +124,12 @@
                     <Button x:Uid="ImportButton" Click="Import_Click" />
                 </StackPanel>
             </ctk:SettingsCard>
-
             <ctk:SettingsCard x:Uid="ResetCard">
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE777;" /></ctk:SettingsCard.HeaderIcon>
                 <Button x:Uid="ResetButton" Click="Reset_Click" />
             </ctk:SettingsCard>
-
-            <!-- ℹ️ О программе -->
+            <!-- О программе -->
             <TextBlock x:Uid="AboutHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
-
             <ctk:SettingsExpander x:Uid="AboutExpander" Header="Simryx Hub">
                 <ctk:SettingsExpander.HeaderIcon>
                     <ImageIcon Source="ms-appx:///Assets/Logo.png" />
@@ -184,7 +155,6 @@
                     </ctk:SettingsCard>
                 </ctk:SettingsExpander.Items>
             </ctk:SettingsExpander>
-
         </StackPanel>
     </ScrollViewer>
 </Page>
