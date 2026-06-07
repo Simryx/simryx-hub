@@ -23,26 +23,35 @@ jobs:
       - name: Build and package
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
+
           $tag = $env:GITHUB_REF_NAME
           $version = $tag.TrimStart('v')
           $numeric = ($version -split '[-+]')[0]
           Write-Host "Tag=$tag  Version=$version  Numeric=$numeric"
 
-          dotnet publish src/Simryx.App/Simryx.App.csproj `
+          dotnet build src/Simryx.App/Simryx.App.csproj `
             -c Release `
-            -r win-x64 `
-            --self-contained false `
             -p:Platform=x64 `
-            -p:WindowsPackageType=None `
             -p:Version=$numeric `
             -p:FileVersion=$numeric `
             -p:AssemblyVersion=$numeric `
-            -o publish/app
+            -p:TreatWarningsAsErrors=false
+          if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
+
+          $releaseRoot = "src/Simryx.App/bin/x64/Release"
+          if (-not (Test-Path $releaseRoot)) { throw "Release folder not found: $releaseRoot" }
+
+          $tfmDir = Get-ChildItem $releaseRoot -Directory | Select-Object -First 1
+          if ($null -eq $tfmDir) { throw "No build output under $releaseRoot" }
+          $outDir = $tfmDir.FullName
+          Write-Host "Build output: $outDir"
+          Get-ChildItem $outDir | Select-Object Name | Format-Table -AutoSize
 
           New-Item -ItemType Directory -Force -Path publish | Out-Null
           $zip = "publish/Simryx.Hub.$version-win-x64.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
-          Compress-Archive -Path publish/app/* -DestinationPath $zip
+          Compress-Archive -Path (Join-Path $outDir '*') -DestinationPath $zip
           Write-Host "Created $zip"
 
       - name: Create GitHub Release
