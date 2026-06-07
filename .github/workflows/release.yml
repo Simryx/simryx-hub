@@ -1,79 +1,52 @@
 name: Release
 
-# Триггер: пуш тега вида v0.3.0 / v1.2.3 / v0.3.0-beta.1
 on:
   push:
     tags:
       - "v*.*.*"
 
-# Нужно для создания релиза и загрузки asset'ов
 permissions:
   contents: write
 
 jobs:
   build-and-release:
     runs-on: windows-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Версия .NET берётся из global.json (8.0.421)
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
 
-      # Версия = тег без префикса "v": v0.3.0 -> 0.3.0
-      - name: Resolve version
-        id: ver
+      - name: Build and package
         shell: pwsh
         run: |
-          $tag = "$ github.ref_name "
+          $tag = $env:GITHUB_REF_NAME
           $version = $tag.TrimStart('v')
-          # Числовая часть для метаданных сборки (без -beta и т.п.)
           $numeric = ($version -split '[-+]')[0]
-          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "numeric=$numeric" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Tag=$tag  Version=$version  Numeric=$numeric"
 
-      - name: Restore
-        run: dotnet restore src/Simryx.App/Simryx.App.csproj
-
-      # Публикуем unpackaged-приложение под win-x64.
-      # Версия сборки прокидывается из тега, чтобы установленная версия = релизу.
-      - name: Publish (win-x64)
-        shell: pwsh
-        run: |
           dotnet publish src/Simryx.App/Simryx.App.csproj `
             -c Release `
             -r win-x64 `
             --self-contained false `
             -p:Platform=x64 `
             -p:WindowsPackageType=None `
-            -p:Version=$ steps.ver.outputs.numeric  `
-            -p:FileVersion=$ steps.ver.outputs.numeric  `
-            -p:AssemblyVersion=$ steps.ver.outputs.numeric  `
+            -p:Version=$numeric `
+            -p:FileVersion=$numeric `
+            -p:AssemblyVersion=$numeric `
             -o publish/app
 
-      # Пакуем портативную сборку в zip — это и будет asset релиза.
-      - name: Package portable zip
-        id: pack
-        shell: pwsh
-        run: |
-          $name = "Simryx.Hub.$ steps.ver.outputs.version -win-x64.zip"
-          Compress-Archive -Path "publish/app/*" -DestinationPath "publish/$name" -Force
-          "asset=publish/$name" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          New-Item -ItemType Directory -Force -Path publish | Out-Null
+          $zip = "publish/Simryx.Hub.$version-win-x64.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path publish/app/* -DestinationPath $zip
+          Write-Host "Created $zip"
 
-      # Создаём релиз и прикладываем asset.
-      # Пре-релиз помечается автоматически, если в теге есть дефис (например -beta.1).
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: $ github.ref_name 
-          name: Simryx Hub $ steps.ver.outputs.version 
+          files: publish/*.zip
           generate_release_notes: true
-          prerelease: $ contains(github.ref_name, '-') 
-          files: $ steps.pack.outputs.asset 
-        env:
-          GITHUB_TOKEN: $ secrets.GITHUB_TOKEN 
