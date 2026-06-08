@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -50,6 +51,7 @@ public sealed class InstallService
 
         var appExe = FindAppExe(o.InstallDir)
             ?? throw new Exception("В пакете не найден исполняемый файл приложения.");
+        var appDir = Path.GetDirectoryName(appExe) ?? o.InstallDir;
 
         p.Report(new("Копирование деинсталлятора…", -1));
         var selfExe = Environment.ProcessPath!;
@@ -67,7 +69,7 @@ public sealed class InstallService
         Directory.CreateDirectory(startMenuDir);
 
         Native.CreateShortcut(Path.Combine(startMenuDir, AppInfo.ProductName + ".lnk"),
-            appExe, AppInfo.Description, appExe, o.InstallDir);
+            appExe, AppInfo.Description, appExe, appDir);
         Native.CreateShortcut(Path.Combine(startMenuDir, "Удалить " + AppInfo.ProductName + ".lnk"),
             uninstExe, "Удаление " + AppInfo.ProductName, uninstExe, o.InstallDir, "--uninstall");
 
@@ -75,7 +77,7 @@ public sealed class InstallService
         {
             var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             Native.CreateShortcut(Path.Combine(desktop, AppInfo.ProductName + ".lnk"),
-                appExe, AppInfo.Description, appExe, o.InstallDir);
+                appExe, AppInfo.Description, appExe, appDir);
         }
 
         p.Report(new("Запись в реестр…", -1));
@@ -141,17 +143,20 @@ public sealed class InstallService
 
     private static string? FindAppExe(string dir)
     {
+        // Сначала ищем по известным именам — включая вложенные папки.
         foreach (var name in new[] { "Simryx.Hub.exe", "Simryx.App.exe" })
         {
-            var p = Path.Combine(dir, name);
-            if (File.Exists(p)) return p;
+            var hit = Directory.EnumerateFiles(dir, name, SearchOption.AllDirectories).FirstOrDefault();
+            if (hit is not null) return hit;
         }
-        return Directory.EnumerateFiles(dir, "*.exe").FirstOrDefault(f =>
+
+        // Запасной вариант: любой подходящий .exe (рекурсивно), кроме служебных.
+        var skip = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            var n = Path.GetFileName(f);
-            return !n.Equals("SimryxSetup.exe", StringComparison.OrdinalIgnoreCase)
-                && !n.Equals("createdump.exe", StringComparison.OrdinalIgnoreCase);
-        });
+            "SimryxSetup.exe", "createdump.exe",
+        };
+        return Directory.EnumerateFiles(dir, "*.exe", SearchOption.AllDirectories)
+            .FirstOrDefault(f => !skip.Contains(Path.GetFileName(f)));
     }
 
     private static void CleanDirContents(string dir)
