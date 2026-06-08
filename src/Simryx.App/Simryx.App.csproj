@@ -16,9 +16,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Simryx.App</RootNamespace>
 
-    <!-- Включает рефлексивную сериализацию System.Text.Json в релизной сборке.
-         Без этого в установленном (Release) приложении JsonSerializer падает с
-         "Reflection-based serialization has been disabled for this application". -->
+    <!-- Иконка приложения (exe). Чинит иконку в Проводнике, ярлыках,
+         автозагрузке и в «Установленных приложениях». Файл должен быть
+         квадратным многоразмерным .ico. -->
+    <ApplicationIcon>Assets\Simryx.ico</ApplicationIcon>
+
+    <!-- Включает рефлексивную сериализацию System.Text.Json в релизной сборке. -->
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
     <!-- App Options -->

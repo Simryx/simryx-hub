@@ -14,9 +14,8 @@
     <AssemblyTitle>Simryx Hub Installer</AssemblyTitle>
     <Product>Simryx Hub</Product>
     <Company>Simryx</Company>
-    <!-- Положи иконку в Resources\Simryx.ico и раскомментируй строку ниже,
-         чтобы у установщика была фирменная иконка: -->
-    <!-- <ApplicationIcon>Resources\Simryx.ico</ApplicationIcon> -->
+    <!-- Фирменная иконка установщика. Файл: Resources\Simryx.ico (квадратный multi-size). -->
+    <ApplicationIcon>Resources\Simryx.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
