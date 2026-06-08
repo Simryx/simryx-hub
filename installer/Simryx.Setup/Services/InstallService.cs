@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
@@ -100,6 +101,75 @@ public sealed class InstallService
         return new InstallResult { AppExePath = appExe, Version = rel.Version, InstallDir = installDir };
     }
 
+    /// <summary>
+    /// Обновление на месте: качаем переданный ZIP, проверяем целостность, чистим
+    /// и распаковываем в ту же папку, пересоздаём ярлыки и обновляем версию в реестре.
+    /// Настройки автозапуска и ярлык на рабочем столе НЕ трогаем — сохраняем выбор пользователя.
+    /// Возвращает путь к новому exe приложения.
+    /// </summary>
+    public async Task<string> UpdateInPlaceAsync(
+        string installDir, string zipUrl, string version, string? sha256,
+        IProgress<ProgressReport> p, CancellationToken ct = default)
+    {
+        var dir = ResolveInstallDir(installDir);
+        EnsureSafeInstallDir(dir);
+
+        var tmpZip = Path.Combine(Path.GetTempPath(), $"SimryxHub_{Guid.NewGuid():N}.zip");
+
+        // Сначала полностью качаем и проверяем во временный файл — пока не тронули установку.
+        p.Report(new($"Скачивание Simryx Hub {version}…", 0));
+        await _gh.DownloadAsync(zipUrl, tmpZip,
+            new Progress<double>(d => p.Report(new($"Скачивание Simryx Hub {version}…", d))), ct);
+
+        if (!string.IsNullOrWhiteSpace(sha256))
+        {
+            p.Report(new("Проверка целостности…", -1));
+            var actual = ComputeSha256(tmpZip);
+            if (!string.Equals(actual, sha256!.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                try { File.Delete(tmpZip); } catch { }
+                throw new Exception("Проверка целостности не пройдена — файл повреждён.");
+            }
+        }
+
+        p.Report(new("Подготовка папки установки…", -1));
+        Directory.CreateDirectory(dir);
+        CleanDirContents(dir);
+
+        p.Report(new("Распаковка файлов…", -1));
+        ZipFile.ExtractToDirectory(tmpZip, dir, overwriteFiles: true);
+        try { File.Delete(tmpZip); } catch { }
+
+        var appExe = FindAppExe(dir)
+            ?? throw new Exception("В пакете не найден исполняемый файл приложения.");
+        var appDir = Path.GetDirectoryName(appExe) ?? dir;
+
+        // Деинсталлятор — это мы сами; в папке он уже есть и при обновлении не перезаписывается.
+        var uninstExe = Path.Combine(dir, "SimryxSetup.exe");
+        var selfExe = Environment.ProcessPath!;
+        try
+        {
+            if (!string.Equals(selfExe, uninstExe, StringComparison.OrdinalIgnoreCase))
+                File.Copy(selfExe, uninstExe, true);
+        }
+        catch { uninstExe = selfExe; }
+
+        p.Report(new("Обновление ярлыков…", -1));
+        var startMenuDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Programs), AppInfo.ProductName);
+        Directory.CreateDirectory(startMenuDir);
+        Native.CreateShortcut(Path.Combine(startMenuDir, AppInfo.ProductName + ".lnk"),
+            appExe, AppInfo.Description, appExe, appDir);
+        Native.CreateShortcut(Path.Combine(startMenuDir, "Удалить " + AppInfo.ProductName + ".lnk"),
+            uninstExe, "Удаление " + AppInfo.ProductName, uninstExe, dir, "--uninstall");
+
+        p.Report(new("Обновление записей реестра…", -1));
+        WriteUninstallRegistry(dir, appExe, uninstExe, version);
+
+        p.Report(new("Готово", 100));
+        return appExe;
+    }
+
     public async Task<string> UninstallAsync(
         IProgress<ProgressReport> p, bool purgeData, CancellationToken ct = default)
     {
@@ -145,7 +215,6 @@ public sealed class InstallService
     public static void ScheduleDirectoryDelete(string dir)
     {
         if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir)) return;
-
         // Не планируем удаление опасных путей (корень диска и т.п.).
         if (!IsDeletablePath(dir)) return;
 
@@ -285,10 +354,8 @@ public sealed class InstallService
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var root = (Path.GetPathRoot(full) ?? "")
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
         if (full.Length <= root.Length || full.Equals(root, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Отказано: очистка корня диска недопустима.");
-
         if (!string.Equals(new DirectoryInfo(full).Name, InstallFolderName, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
                 "Отказано: папка не является каталогом установки Simryx Hub.");
@@ -303,6 +370,13 @@ public sealed class InstallService
         {
             try { Directory.Delete(d, true); } catch { }
         }
+    }
+
+    private static string ComputeSha256(string file)
+    {
+        using var sha = SHA256.Create();
+        using var fs = File.OpenRead(file);
+        return Convert.ToHexString(sha.ComputeHash(fs)).ToLowerInvariant();
     }
 
     private static void WriteUninstallRegistry(string dir, string appExe, string uninstExe, string version)

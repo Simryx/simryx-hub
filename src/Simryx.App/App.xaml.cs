@@ -42,17 +42,14 @@ public partial class App : Application
     private static IServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
-
         // Сервисы
         services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
         services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<NotificationService>();
         services.AddSingleton<UnitsService>();
-
         // ViewModels
         services.AddTransient<SettingsViewModel>();
-
         return services.BuildServiceProvider();
     }
 
@@ -61,7 +58,8 @@ public partial class App : Application
         // Единая идентичность приложения (AUMID): нужна тостам и группировке
         // окон на панели задач. Ставим до создания окна и регистрации тостов.
         try { SetCurrentProcessExplicitAppUserModelID("Simryx.Hub"); } catch { /* не критично */ }
-        ShortcutService.EnsureStartMenuShortcut("Simryx.Hub", "Simryx Hub"); // ← добавить
+        ShortcutService.EnsureStartMenuShortcut("Simryx.Hub", "Simryx Hub");
+
         // Быстрая инициализация языка и темы — до показа окна
         Services.GetRequiredService<ILocalizationService>().Initialize();
         var theme = Services.GetRequiredService<IThemeSelectorService>();
@@ -85,7 +83,6 @@ public partial class App : Application
         }
 
         // --- Трей и уведомления ---
-
         // Тосты Windows (часть Windows App SDK, без сторонних пакетов).
         // ВАЖНО: обработчики событий нужно подписать ДО вызова Register().
         AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
@@ -112,10 +109,8 @@ public partial class App : Application
     {
         // 1. Уводим окно далеко за пределы любого экрана (невидимо).
         appWindow.Move(new PointInt32(-32000, -32000));
-
         // 2. Активируем — WinUI инициализируется, сплэш стартует, но за кадром.
         MainWindow!.Activate();
-
         // 3. Сворачиваем в панель задач.
         presenter.Minimize();
 
@@ -129,7 +124,6 @@ public partial class App : Application
                 sender.Changed -= OnChanged;
             }
         }
-
         appWindow.Changed += OnChanged;
     }
 
@@ -165,7 +159,6 @@ public partial class App : Application
     }
 
     // --- Трей: инициализация, видимость, закрытие/восстановление ---
-
     private void InitializeTray()
     {
         if (MainWindow is null) return;
@@ -196,7 +189,6 @@ public partial class App : Application
         if (_exiting) return; // настоящий выход — не мешаем
         var toTray = Services.GetService<ILocalSettingsService>()?.Read<bool?>("MinimizeToTray") ?? false;
         if (!toTray) return;  // трей выключен — закрытие = выход
-
         args.Cancel = true;   // не закрываем, прячем в трей
         MainWindow?.AppWindow?.Hide();
     }
@@ -223,6 +215,20 @@ public partial class App : Application
         MainWindow?.Close();
     }
 
+    /// <summary>
+    /// Полное закрытие приложения для применения обновления.
+    /// Тот же путь, что пункт «Выход» в трее: снимаем перехват закрытия (через _exiting),
+    /// убираем иконку трея и регистрацию тостов, закрываем окно — процесс завершается,
+    /// и установщик может свободно заменить файлы в папке установки.
+    /// </summary>
+    public static void QuitCompletely()
+    {
+        if (Current is App app)
+            app.ExitApplication();
+        else
+            Current?.Exit();
+    }
+
     /// Реальная фоновая инициализация (вызывается из splash-оверлея MainWindow)
     public static async Task InitializeAsync()
     {
@@ -236,7 +242,6 @@ public partial class App : Application
     }
 
     // --- Обработчики и запись вылетов ---
-
     private void App_OnUnhandledException(object sender,
         Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
@@ -320,7 +325,6 @@ public partial class App : Application
     }
 
     // --- Win32 interop ---
-
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
     private static extern void SetCurrentProcessExplicitAppUserModelID(
         [MarshalAs(UnmanagedType.LPWStr)] string appID);
