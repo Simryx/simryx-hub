@@ -48,18 +48,24 @@ public sealed partial class ProfilesPage : Page
         Groups.Clear();
         var all = _service.GetAll();
         var priorities = _service.GetPriorities();
+
         var grouped = all
             .GroupBy(GameCatalog.ResolveGameId)
             .OrderBy(g => GameNameFor(g.Key), StringComparer.CurrentCultureIgnoreCase);
+
         foreach (var group in grouped)
         {
             var gameId = group.Key;
             priorities.TryGetValue(gameId, out var priorityId);
+
             var gg = new GameGroup
             {
                 GameId = gameId,
                 GameName = GameNameFor(gameId),
+                // Восстанавливаем сохранённое состояние (по умолчанию развёрнуто).
+                IsExpanded = _service.GetGroupExpanded(gameId),
             };
+
             foreach (var profile in group
                          .OrderByDescending(p => p.Id == priorityId)
                          .ThenBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase))
@@ -67,18 +73,57 @@ public sealed partial class ProfilesPage : Page
                 profile.IsPriority = profile.Id == priorityId;
                 gg.Profiles.Add(profile);
             }
+
             Groups.Add(gg);
         }
 
         var any = Groups.Count > 0;
         GroupsScroll.Visibility = any ? Visibility.Visible : Visibility.Collapsed;
         EmptyState.Visibility = any ? Visibility.Collapsed : Visibility.Visible;
+
         if (any && !MotionService.Reduced)
             EntranceAnimations.Play(GroupsScroll);
     }
 
     private static string GameNameFor(string gameId)
         => GameCatalog.FindById(gameId)?.Name ?? gameId;
+
+    // ===== Применение сохранённого состояния при появлении группы =====
+    private void GroupContent_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not ListView content) return;
+        if (content.DataContext is not GameGroup group) return;
+
+        FrameworkElement? chevron = null;
+        if (content.Parent is Panel panel)
+        {
+            var header = panel.Children.OfType<Grid>().FirstOrDefault();
+            if (header is not null) chevron = FindByTag(header, "chevron");
+        }
+
+        ApplyExpandedState(content, chevron, group.IsExpanded);
+    }
+
+    // Мгновенно (без анимации) приводит группу к нужному состоянию.
+    private static void ApplyExpandedState(FrameworkElement content, FrameworkElement? chevron, bool expand)
+    {
+        // Останавливаем возможную текущую анимацию высоты для этого элемента не требуется здесь:
+        // вызывается только при первичном появлении контейнера.
+        content.Visibility = expand ? Visibility.Visible : Visibility.Collapsed;
+        content.Height = expand ? double.NaN : 0;
+        content.Opacity = expand ? 1 : 0;
+
+        if (chevron is not null)
+        {
+            if (chevron.RenderTransform is not RotateTransform rotate)
+            {
+                rotate = new RotateTransform();
+                chevron.RenderTransformOrigin = new Point(0.5, 0.5);
+                chevron.RenderTransform = rotate;
+            }
+            rotate.Angle = expand ? 0d : 180d;
+        }
+    }
 
     // ===== Раскрытие/сворачивание группы (переключает только кнопка-стрелка) =====
     private void ToggleGroup_Click(object sender, RoutedEventArgs e)
@@ -92,7 +137,9 @@ public sealed partial class ProfilesPage : Page
         if (content is null) return;
 
         var chevron = FindByTag(button, "chevron");
+
         group.IsExpanded = !group.IsExpanded;
+        _service.SetGroupExpanded(group.GameId, group.IsExpanded);   // сохраняем состояние
         AnimateGroup(content, chevron, group.IsExpanded);
     }
 
@@ -261,10 +308,12 @@ public sealed partial class ProfilesPage : Page
         {
             if (listView.ContainerFromItem(item) is not UIElement container) continue;
             if (!oldPositions.TryGetValue(item, out var oldY)) continue;
+
             var newY = container.TransformToVisual(listView)
                                 .TransformPoint(new Point(0, 0)).Y;
             var delta = oldY - newY;
             if (Math.Abs(delta) < 0.5) continue;
+
             AnimateTranslateFrom(container, delta);
         }
     }
@@ -342,6 +391,7 @@ public sealed partial class ProfilesPage : Page
             PlaceholderText = _res.GetString("ProfileEditorNamePlaceholder"),
             Text = profile.Name,
         };
+
         var gameCombo = new ComboBox
         {
             Header = _res.GetString("ProfileEditorGame"),
@@ -360,6 +410,7 @@ public sealed partial class ProfilesPage : Page
             Maximum = 100,
             Value = profile.Sensitivity,
         };
+
         var forceSlider = new Slider
         {
             Header = _res.GetString("ProfileEditorForce"),
@@ -367,6 +418,7 @@ public sealed partial class ProfilesPage : Page
             Maximum = 100,
             Value = profile.ForceFeedback,
         };
+
         var notesBox = new TextBox
         {
             Header = _res.GetString("ProfileEditorNotes"),

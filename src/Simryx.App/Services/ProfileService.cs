@@ -17,6 +17,7 @@ public sealed class ProfileService
     private static string ProfilesPath => Path.Combine(Dir, "profiles.json");
     private static string PrioritiesPath => Path.Combine(Dir, "priorities.json");
     private static string ActivePath => Path.Combine(Dir, "active-profile.txt");
+    private static string GroupStatesPath => Path.Combine(Dir, "group-states.json");
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
@@ -27,7 +28,6 @@ public sealed class ProfileService
     public static event Action? ActiveChanged;
 
     // ===== Профили =====
-
     public List<RacingProfile> GetAll()
     {
         try
@@ -88,7 +88,6 @@ public sealed class ProfileService
     }
 
     // ===== Приоритеты по играм =====
-
     public Dictionary<string, string> GetPriorities()
     {
         try
@@ -127,7 +126,6 @@ public sealed class ProfileService
     }
 
     // ===== Текущий (активный) профиль для главной =====
-
     public string? GetActiveId()
     {
         try
@@ -161,5 +159,41 @@ public sealed class ProfileService
             File.WriteAllText(ActivePath, id);
         }
         ActiveChanged?.Invoke();
+    }
+
+    // ===== Состояние «свёрнуто/развёрнуто» по группам (играм) =====
+    public Dictionary<string, bool> GetGroupStates()
+    {
+        try
+        {
+            if (!File.Exists(GroupStatesPath)) return new Dictionary<string, bool>();
+            var dict = JsonSerializer.Deserialize<Dictionary<string, bool>>(File.ReadAllText(GroupStatesPath));
+            return dict ?? new Dictionary<string, bool>();
+        }
+        catch
+        {
+            return new Dictionary<string, bool>();
+        }
+    }
+
+    private void SaveGroupStates(Dictionary<string, bool> states)
+    {
+        Directory.CreateDirectory(Dir);
+        File.WriteAllText(GroupStatesPath, JsonSerializer.Serialize(states, JsonOptions));
+    }
+
+    // По умолчанию (если состояние не сохранялось) группа развёрнута.
+    public bool GetGroupExpanded(string gameId, bool fallback = true)
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) return fallback;
+        return GetGroupStates().TryGetValue(gameId, out var v) ? v : fallback;
+    }
+
+    public void SetGroupExpanded(string gameId, bool expanded)
+    {
+        if (string.IsNullOrWhiteSpace(gameId)) return;
+        var states = GetGroupStates();
+        states[gameId] = expanded;
+        SaveGroupStates(states);
     }
 }
