@@ -73,7 +73,11 @@ public partial class MainWindow : Window
         {
             case Step.Welcome: PanelWelcome.Visibility = Visibility.Visible; StepTitle.Text = "Добро пожаловать"; break;
             case Step.License: PanelLicense.Visibility = Visibility.Visible; StepTitle.Text = "Шаг 2 из 4 · Лицензия"; break;
-            case Step.Location: PanelLocation.Visibility = Visibility.Visible; StepTitle.Text = "Шаг 3 из 4 · Папка установки"; break;
+            case Step.Location:
+                PanelLocation.Visibility = Visibility.Visible;
+                StepTitle.Text = "Шаг 3 из 4 · Папка установки";
+                UpdateInstallPreview();
+                break;
             case Step.Options: PanelOptions.Visibility = Visibility.Visible; StepTitle.Text = "Шаг 4 из 4 · Параметры"; break;
             case Step.Progress: PanelProgress.Visibility = Visibility.Visible; StepTitle.Text = _uninstall ? "Удаление" : "Установка"; break;
             case Step.Finish: PanelFinish.Visibility = Visibility.Visible; StepTitle.Text = "Завершение"; break;
@@ -110,6 +114,24 @@ public partial class MainWindow : Window
 
     private void LicenseAccept_Changed(object sender, RoutedEventArgs e) => UpdateNav();
 
+    private void PathBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        => UpdateInstallPreview();
+
+    /// <summary>Показывает реальную папку установки (с добавленной подпапкой Simryx Hub).</summary>
+    private void UpdateInstallPreview()
+    {
+        if (InstallPreview is null) return; // может вызваться до полной инициализации
+        try
+        {
+            var resolved = InstallService.ResolveInstallDir(PathBox.Text);
+            InstallPreview.Text = $"Будет установлено в:  {resolved}";
+        }
+        catch
+        {
+            InstallPreview.Text = "";
+        }
+    }
+
     private void Browse_Click(object sender, RoutedEventArgs e)
     {
         var dlg = new Microsoft.Win32.OpenFolderDialog
@@ -119,7 +141,7 @@ public partial class MainWindow : Window
                 ? PathBox.Text
                 : AppInfo.DefaultInstallDir,
         };
-        if (dlg.ShowDialog() == true) PathBox.Text = dlg.FolderName;
+        if (dlg.ShowDialog() == true) PathBox.Text = dlg.FolderName; // обновит превью через TextChanged
     }
 
     private void Back_Click(object sender, RoutedEventArgs e)

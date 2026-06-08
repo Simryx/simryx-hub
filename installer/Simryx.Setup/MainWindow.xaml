@@ -75,11 +75,15 @@
                                 BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="8">
                             <TextBox x:Name="PathBox" BorderThickness="0" Background="Transparent"
                                      Foreground="{DynamicResource Brush.Text}" Padding="12,9"
-                                     VerticalContentAlignment="Center"/>
+                                     VerticalContentAlignment="Center"
+                                     TextChanged="PathBox_TextChanged"/>
                         </Border>
                         <Button Grid.Column="1" Content="Обзор…" Margin="10,0,0,0"
                                 Style="{StaticResource GhostButton}" Click="Browse_Click"/>
                     </Grid>
+                    <!-- Предпросмотр реальной папки установки (с подпапкой Simryx Hub) -->
+                    <TextBlock x:Name="InstallPreview" TextWrapping="Wrap" Margin="0,10,0,0"
+                               FontSize="12" Foreground="{DynamicResource Brush.Subtle}"/>
                 </StackPanel>
 
                 <!-- Опции -->
