@@ -14,6 +14,9 @@ public enum UpdateStatus
 {
     UpToDate,
     UpdateAvailable,
+    // Стоим на пред-релизе (beta/rc), выбран стабильный канал, а последняя
+    // стабильная версия по числам не выше текущей → можно вернуться на стабильную.
+    RollbackAvailable,
     Failed,
 }
 
@@ -42,6 +45,11 @@ public sealed class UpdateCheckResult
     public string? Error { get; init; }
 
     public bool HasUpdate => Status == UpdateStatus.UpdateAvailable && Info is not null;
+
+    // Можно установить (как обновление вперёд, так и возврат на стабильную).
+    public bool CanInstall =>
+        Info is not null &&
+        (Status == UpdateStatus.UpdateAvailable || Status == UpdateStatus.RollbackAvailable);
 }
 
 // ===== Часть 3: загрузка и установка =====
@@ -51,7 +59,6 @@ public sealed class UpdateDownloadProgress
 {
     public long BytesReceived { get; init; }
     public long TotalBytes { get; init; }
-
     public double Fraction => TotalBytes > 0 ? Math.Clamp((double)BytesReceived / TotalBytes, 0, 1) : 0;
     public int Percent => (int)Math.Round(Fraction * 100);
 }
@@ -71,6 +78,5 @@ public sealed class UpdateDownloadResult
     public UpdateDownloadStatus Status { get; init; }
     public string? FilePath { get; init; }
     public string? Error { get; init; }
-
     public bool Success => Status == UpdateDownloadStatus.Completed && !string.IsNullOrEmpty(FilePath);
 }

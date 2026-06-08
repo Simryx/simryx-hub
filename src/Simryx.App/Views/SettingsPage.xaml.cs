@@ -339,6 +339,65 @@ public sealed partial class SettingsPage : Page
                 break;
             }
 
+            case UpdateStatus.RollbackAvailable when result.Info is not null:
+            {
+                // Установлена бета-сборка, но выбран стабильный канал, а последняя
+                // стабильная версия не выше текущей → предлагаем вернуться на стабильную.
+                var info = result.Info;
+                var currentDisplay = GetDisplayVersion();
+
+                // Тихий режим (смена канала): без модалки, только строка статуса.
+                if (silent)
+                {
+                    ShowStatus(InfoBarSeverity.Informational,
+                        en ? $"Stable version {info.Version} is available"
+                           : $"Доступна стабильная версия {info.Version}",
+                        en ? "You're on a beta build. Click \"Check for updates\" to switch to stable."
+                           : "У вас бета-сборка. Нажмите «Проверить обновления», чтобы вернуться на стабильную.");
+                    break;
+                }
+
+                StatusInfoBar.IsOpen = false;
+                var hasInstaller = !string.IsNullOrWhiteSpace(info.DownloadUrl);
+                var intro = en
+                    ? $"You're using a beta build ({currentDisplay}). You can roll back to the stable version {info.Version}."
+                    : $"Вы используете бета-сборку ({currentDisplay}). Можно вернуться на стабильную версию {info.Version}.";
+
+                var dialog = new ContentDialog
+                {
+                    Title = en ? $"Roll back to stable {info.Version}?"
+                               : $"Вернуться на стабильную {info.Version}?",
+                    Content = BuildRollbackContent(intro, info, en),
+                    CloseButtonText = en ? "Later" : "Позже",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = XamlRoot,
+                    RequestedTheme = ActualTheme,
+                };
+                if (hasInstaller)
+                {
+                    dialog.PrimaryButtonText = en ? "Install stable" : "Установить стабильную";
+                    dialog.SecondaryButtonText = en ? "Release page" : "Страница релиза";
+                }
+                else
+                {
+                    dialog.PrimaryButtonText = en ? "Open release page" : "Открыть страницу релиза";
+                }
+
+                var choice = await dialog.ShowAsync();
+                if (hasInstaller)
+                {
+                    if (choice == ContentDialogResult.Primary)
+                        await UpdateFlow.RunAsync(info, XamlRoot, en, ActualTheme);
+                    else if (choice == ContentDialogResult.Secondary && !string.IsNullOrWhiteSpace(info.ReleaseUrl))
+                        await Launcher.LaunchUriAsync(new Uri(info.ReleaseUrl));
+                }
+                else if (choice == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(info.ReleaseUrl))
+                {
+                    await Launcher.LaunchUriAsync(new Uri(info.ReleaseUrl));
+                }
+                break;
+            }
+
             case UpdateStatus.Failed:
                 ShowStatus(InfoBarSeverity.Error,
                     en ? "Update check failed" : "Ошибка проверки обновлений",
@@ -368,6 +427,19 @@ public sealed partial class SettingsPage : Page
             MaxHeight = 360,
             Content = text,
         };
+    }
+
+    // Контент диалога отката: пояснение сверху + заметки к стабильному релизу.
+    private static UIElement BuildRollbackContent(string intro, UpdateInfo info, bool en)
+    {
+        var panel = new StackPanel { Spacing = 10 };
+        panel.Children.Add(new TextBlock
+        {
+            Text = intro,
+            TextWrapping = TextWrapping.Wrap,
+        });
+        panel.Children.Add(BuildNotesContent(info, en));
+        return panel;
     }
 
     // ===== Дополнительно =====

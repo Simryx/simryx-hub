@@ -38,6 +38,22 @@ public sealed class UpdateService
     public static Version CurrentVersion =>
         Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 1, 0, 0);
 
+    /// <summary>
+    /// Является ли ТЕКУЩАЯ установленная сборка пред-релизом (beta/rc).
+    /// AssemblyVersion числовой и суффикс не хранит, поэтому смотрим
+    /// AssemblyInformationalVersion (туда из &lt;Version&gt; попадает полный semver,
+    /// например "0.2.2-beta.1"). "+&lt;git-hash&gt;" отбрасываем, чтобы не спутать с дефисом.
+    /// </summary>
+    public static bool CurrentIsPrerelease()
+    {
+        var asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+        var info = asm?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        if (string.IsNullOrWhiteSpace(info)) return false;
+        var plus = info.IndexOf('+');
+        if (plus >= 0) info = info[..plus];
+        return info.Contains('-');
+    }
+
     /// <summary>Проверить наличие обновления в выбранном канале.</summary>
     public async Task<UpdateCheckResult> CheckForUpdatesAsync(
         UpdateChannel channel = UpdateChannel.Stable,
@@ -57,9 +73,18 @@ public sealed class UpdateService
             var info = ToInfo(release);
             var remote = ParseVersion(release.TagName);
 
-            return remote > current
-                ? Build(UpdateStatus.UpdateAvailable, current, info, null)
-                : Build(UpdateStatus.UpToDate, current, info, null);
+            // Обычное обновление вперёд.
+            if (remote > current)
+                return Build(UpdateStatus.UpdateAvailable, current, info, null);
+
+            // Особый случай: установлена бета-сборка, но выбран СТАБИЛЬНЫЙ канал,
+            // а последняя стабильная версия по числам не выше текущей
+            // (например стоит 0.2.2-beta.1, а стабильная — 0.2.1 или 0.2.2).
+            // Это не «актуально», а возможность вернуться на стабильную сборку.
+            if (channel == UpdateChannel.Stable && CurrentIsPrerelease() && !info.IsPrerelease)
+                return Build(UpdateStatus.RollbackAvailable, current, info, null);
+
+            return Build(UpdateStatus.UpToDate, current, info, null);
         }
         catch (Exception ex)
         {
@@ -142,17 +167,21 @@ public sealed class UpdateService
     private static string? ExtractSha256(string? body, string? assetName)
     {
         if (string.IsNullOrWhiteSpace(body)) return null;
+
         string? fallback = null;
         foreach (var raw in body.Split('\n'))
         {
             var line = raw.Trim();
             if (line.Length == 0) continue;
+
             var m = Regex.Match(line, "(?<![A-Fa-f0-9])([A-Fa-f0-9]{64})(?![A-Fa-f0-9])");
             if (!m.Success) continue;
+
             var hash = m.Groups[1].Value.ToLowerInvariant();
             if (!string.IsNullOrEmpty(assetName) &&
                 line.Contains(assetName!, StringComparison.OrdinalIgnoreCase))
                 return hash; // точное совпадение по имени файла
+
             fallback ??= hash;
         }
         return fallback;
