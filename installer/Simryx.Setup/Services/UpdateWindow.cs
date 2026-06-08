@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Simryx.Setup.Services;
 
 namespace Simryx.Setup;
@@ -27,13 +28,22 @@ public sealed class UpdateWindow : Window
 
     public UpdateWindow()
     {
+        // Тема окна обновления должна соответствовать системной — как и весь установщик.
+        // Идемпотентно: повторный вызов из update-режима App ничего не ломает.
+        ThemeManager.ApplySystemTheme();
+
         Title = "Обновление Simryx Hub";
         Width = 440;
         Height = 170;
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
         ResizeMode = ResizeMode.NoResize;
+        Background = ThemeBrush("Brush.Bg");
 
         _status.Text = "Подготовка обновления…";
+        _status.Foreground = ThemeBrush("Brush.Subtle");
+
+        _bar.Foreground = ThemeBrush("Brush.Accent");
+        _bar.Background = ThemeBrush("Brush.Control");
 
         var panel = new StackPanel { Margin = new Thickness(22) };
         panel.Children.Add(new TextBlock
@@ -41,12 +51,17 @@ public sealed class UpdateWindow : Window
             Text = "Обновление Simryx Hub",
             FontSize = 16,
             FontWeight = FontWeights.SemiBold,
+            Foreground = ThemeBrush("Brush.Text"),
             Margin = new Thickness(0, 0, 0, 12),
         });
         panel.Children.Add(_status);
         panel.Children.Add(_bar);
         Content = panel;
     }
+
+    // Берёт кисть из палитры ThemeManager; на всякий случай — системный фолбэк.
+    private static Brush ThemeBrush(string key)
+        => Application.Current.Resources[key] as Brush ?? SystemColors.WindowTextBrush;
 
     public async Task RunAsync()
     {
@@ -103,11 +118,9 @@ public sealed class UpdateWindow : Window
     private static async Task WaitForProcessExitAsync(int pid, TimeSpan timeout)
     {
         if (pid <= 0) return;
-
         Process? proc;
         try { proc = Process.GetProcessById(pid); }
         catch { return; } // уже закрыт
-
         if (proc is null) return;
 
         var sw = Stopwatch.StartNew();

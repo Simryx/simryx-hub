@@ -26,7 +26,6 @@ public sealed partial class SettingsPage : Page
     private static string SettingsDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "Simryx", "Simryx Hub");
-
     private static string SettingsFile => Path.Combine(SettingsDir, "settings.json");
     private static string LogsDir => Path.Combine(SettingsDir, "logs");
 
@@ -85,13 +84,32 @@ public sealed partial class SettingsPage : Page
         CrashToggle.IsOn = _settings.Read<bool?>("CrashReports") ?? false;
 
         // Версия / лицензия
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        var versionString = version is null ? "0.1.0" : $"{version.Major}.{version.Minor}.{version.Build}";
+        // Берём ПОЛНУЮ версию вместе с pre-release-суффиксом (например 0.2.1-beta.1),
+        // а не числовую Major.Minor.Build — иначе суффикс «-beta.1» теряется.
+        var versionString = GetDisplayVersion();
         VersionText.Text = string.Format(_res.GetString("VersionFormat"), versionString);
         VersionBadge.Text = string.Format(_res.GetString("VersionFormat"), versionString);
         LicenseText.Text = _res.GetString("LicenseInactive");
 
         _loaded = true;
+    }
+
+    /// <summary>
+    /// Отображаемая версия приложения вместе с pre-release-суффиксом (например "0.2.1-beta.1").
+    /// Источник — AssemblyInformationalVersion (туда из &lt;Version&gt; попадает полный semver).
+    /// Отрезаем "+&lt;git-hash&gt;", который .NET SDK добавляет к информационной версии.
+    /// </summary>
+    private static string GetDisplayVersion()
+    {
+        var asm = Assembly.GetExecutingAssembly();
+        var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        if (!string.IsNullOrWhiteSpace(info))
+        {
+            var plus = info.IndexOf('+');
+            return plus >= 0 ? info[..plus] : info;
+        }
+        var v = asm.GetName().Version;
+        return v is null ? "0.1.0" : $"{v.Major}.{v.Minor}.{v.Build}";
     }
 
     // Единые локализованные подписи для всех ToggleSwitch (не зависят от языка ОС)
@@ -113,7 +131,6 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Внешний вид =====
-
     private void ThemeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
@@ -134,7 +151,6 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Язык и регион =====
-
     private void Language_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
@@ -152,7 +168,6 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Запуск и система =====
-
     private void Startup_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_loaded) return;
@@ -190,8 +205,8 @@ public sealed partial class SettingsPage : Page
     {
         var notifications = App.Services.GetService<NotificationService>();
         if (notifications is null) return;
-        var en = IsEnglish;
 
+        var en = IsEnglish;
         notifications.NotifyUpdate(
             en ? "Update available" : "Доступно обновление",
             en ? "Test of update notifications." : "Проверка уведомлений об обновлениях.");
@@ -212,11 +227,9 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Обновления (Часть 2 + 3 + 5) =====
-
     private async void Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_loaded) return;
-
         // Часть 5: сохраняем выбранный канал — единый источник правды для всех проверок.
         _settings.Save("UpdateChannel", ChannelCombo.SelectedIndex == 1 ? "Beta" : "Stable");
 
@@ -251,6 +264,7 @@ public sealed partial class SettingsPage : Page
         ShowStatus(InfoBarSeverity.Informational,
             string.Empty,
             en ? "Checking for updates…" : "Проверяем обновления…");
+
         try
         {
             var result = await new UpdateService().CheckForUpdatesAsync(ReadChannel());
@@ -324,11 +338,13 @@ public sealed partial class SettingsPage : Page
                 }
                 break;
             }
+
             case UpdateStatus.Failed:
                 ShowStatus(InfoBarSeverity.Error,
                     en ? "Update check failed" : "Ошибка проверки обновлений",
                     result.Error ?? string.Empty);
                 break;
+
             default:
                 ShowStatus(InfoBarSeverity.Success,
                     en ? "You're up to date" : "Установлена последняя версия",
@@ -355,7 +371,6 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Дополнительно =====
-
     private async void OpenLogs_Click(object sender, RoutedEventArgs e)
     {
         Directory.CreateDirectory(LogsDir);
@@ -370,7 +385,6 @@ public sealed partial class SettingsPage : Page
             ShowStatus(_res.GetString("StatusExportNoFile"));
             return;
         }
-
         var picker = new FileSavePicker
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
@@ -378,10 +392,8 @@ public sealed partial class SettingsPage : Page
         };
         picker.FileTypeChoices.Add("JSON", new List<string> { ".json" });
         InitializeWithWindow(picker);
-
         var file = await picker.PickSaveFileAsync();
         if (file is null) return;
-
         await FileIO.WriteTextAsync(file, File.ReadAllText(SettingsFile));
         ShowStatus(_res.GetString("StatusExported"));
     }
@@ -394,17 +406,13 @@ public sealed partial class SettingsPage : Page
         };
         picker.FileTypeFilter.Add(".json");
         InitializeWithWindow(picker);
-
         var file = await picker.PickSingleFileAsync();
         if (file is null) return;
-
         Directory.CreateDirectory(SettingsDir);
         File.WriteAllText(SettingsFile, await FileIO.ReadTextAsync(file));
-
         // Файл заменён в обход сервиса — обновляем кэш, иначе следующий Save
         // перезапишет импортированные настройки устаревшими значениями из памяти.
         _settings.Reload();
-
         ShowStatus(_res.GetString("StatusImported"));
         RestartInfoBar.IsOpen = true;
     }
@@ -422,13 +430,11 @@ public sealed partial class SettingsPage : Page
             RequestedTheme = ActualTheme,
         };
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
-
         if (File.Exists(SettingsFile)) File.Delete(SettingsFile);
         Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
     }
 
     // ===== О программе =====
-
     private async void Link_Click(object sender, RoutedEventArgs e)
     {
         if (sender is HyperlinkButton btn && btn.Tag is string url)
@@ -438,7 +444,6 @@ public sealed partial class SettingsPage : Page
     }
 
     // ===== Вспомогательное =====
-
     private void Restart_Click(object sender, RoutedEventArgs e)
         => Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
 

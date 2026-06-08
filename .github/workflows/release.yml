@@ -26,12 +26,19 @@ jobs:
           # Полностью автономная сборка: -r win-x64 + SelfContained (.NET рантайм),
           # а WindowsAppSDKSelfContained=true в .csproj докладывает Windows App SDK.
           # Итог: приложение запускается без установки .NET и Windows App Runtime.
+          #
+          # ВАЖНО (отображение версии): в Version кладём ПОЛНЫЙ semver вместе с
+          # суффиксом (например 0.2.1-beta.1) — он попадает в
+          # AssemblyInformationalVersion, который приложение читает в «О программе».
+          # AssemblyVersion/FileVersion обязаны быть числовыми, поэтому им отдаём
+          # только числовую часть ($numeric). IncludeSourceRevision...=false убирает
+          # хвост "+<git-hash>", чтобы версия отображалась ровно как "0.2.1-beta.1".
           dotnet build src/Simryx.App/Simryx.App.csproj `
             -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true `
-            -p:Version=$numeric -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
+            -p:Version=$version -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
+            -p:IncludeSourceRevisionInInformationalVersion=false `
             -p:TreatWarningsAsErrors=false
           if ($LASTEXITCODE -ne 0) { throw "app build failed: $LASTEXITCODE" }
-
           # Находим папку с собранным exe (с RID путь вложен в win-x64) и архивируем её.
           $buildRoot = "src/Simryx.App/bin/x64/Release"
           $exe = Get-ChildItem $buildRoot -Recurse -Filter "Simryx.App.exe" | Select-Object -First 1
@@ -62,3 +69,21 @@ jobs:
             publish/*.zip
             installer-dist/SimryxSetup.exe
           generate_release_notes: true
+
+      - name: Mark beta as pre-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            // Стабильные теги (v0.2.1) остаются Latest. Теги с дефисом
+            // (v0.2.1-beta.1, -rc.1 и т.п.) помечаем как Pre-release.
+            if (!tag.includes('-')) return;
+            const { owner, repo } = context.repo;
+            const rel = await github.rest.repos.getReleaseByTag({ owner, repo, tag });
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: rel.data.id,
+              prerelease: true,
+              make_latest: 'false',
+            });
