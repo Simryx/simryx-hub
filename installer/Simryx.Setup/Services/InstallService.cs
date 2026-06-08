@@ -30,6 +30,9 @@ public sealed class InstallService
 {
     private readonly GitHubClient _gh = new();
 
+    /// <summary>Имя нашей подпапки установки. Внутрь именно её ставим и только её чистим.</summary>
+    private const string InstallFolderName = "Simryx Hub";
+
     /// <summary>Папка с пользовательскими данными приложения (%LocalAppData%\Simryx).</summary>
     public static string DataDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simryx");
@@ -37,6 +40,12 @@ public sealed class InstallService
     public async Task<InstallResult> InstallAsync(
         InstallOptions o, IProgress<ProgressReport> p, CancellationToken ct = default)
     {
+        // ВАЖНО: никогда не устанавливаем в «голую» выбранную папку — всегда внутрь
+        // собственной подпапки Simryx Hub. Это защищает от очистки корня диска
+        // или чужих данных (выбор «D:\» -> «D:\Simryx Hub»).
+        var installDir = ResolveInstallDir(o.InstallDir);
+        EnsureSafeInstallDir(installDir);
+
         p.Report(new("Получение сведений о последней версии…", -1));
         var rel = await _gh.GetLatestStableAsync(ct);
 
@@ -46,20 +55,20 @@ public sealed class InstallService
             new Progress<double>(d => p.Report(new($"Скачивание Simryx Hub {rel.Version}…", d))), ct);
 
         p.Report(new("Подготовка папки установки…", -1));
-        Directory.CreateDirectory(o.InstallDir);
-        CleanDirContents(o.InstallDir);
+        Directory.CreateDirectory(installDir);
+        CleanDirContents(installDir);
 
         p.Report(new("Распаковка файлов…", -1));
-        ZipFile.ExtractToDirectory(tmpZip, o.InstallDir, overwriteFiles: true);
+        ZipFile.ExtractToDirectory(tmpZip, installDir, overwriteFiles: true);
         try { File.Delete(tmpZip); } catch { }
 
-        var appExe = FindAppExe(o.InstallDir)
+        var appExe = FindAppExe(installDir)
             ?? throw new Exception("В пакете не найден исполняемый файл приложения.");
-        var appDir = Path.GetDirectoryName(appExe) ?? o.InstallDir;
+        var appDir = Path.GetDirectoryName(appExe) ?? installDir;
 
         p.Report(new("Копирование деинсталлятора…", -1));
         var selfExe = Environment.ProcessPath!;
-        var uninstExe = Path.Combine(o.InstallDir, "SimryxSetup.exe");
+        var uninstExe = Path.Combine(installDir, "SimryxSetup.exe");
         try
         {
             if (!string.Equals(selfExe, uninstExe, StringComparison.OrdinalIgnoreCase))
@@ -71,11 +80,10 @@ public sealed class InstallService
         var startMenuDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Programs), AppInfo.ProductName);
         Directory.CreateDirectory(startMenuDir);
-
         Native.CreateShortcut(Path.Combine(startMenuDir, AppInfo.ProductName + ".lnk"),
             appExe, AppInfo.Description, appExe, appDir);
         Native.CreateShortcut(Path.Combine(startMenuDir, "Удалить " + AppInfo.ProductName + ".lnk"),
-            uninstExe, "Удаление " + AppInfo.ProductName, uninstExe, o.InstallDir, "--uninstall");
+            uninstExe, "Удаление " + AppInfo.ProductName, uninstExe, installDir, "--uninstall");
 
         if (o.DesktopShortcut)
         {
@@ -85,11 +93,11 @@ public sealed class InstallService
         }
 
         p.Report(new("Запись в реестр…", -1));
-        WriteUninstallRegistry(o.InstallDir, appExe, uninstExe, rel.Version);
+        WriteUninstallRegistry(installDir, appExe, uninstExe, rel.Version);
         SetRunAtStartup(o.RunAtStartup, appExe);
 
         p.Report(new("Готово", 100));
-        return new InstallResult { AppExePath = appExe, Version = rel.Version, InstallDir = o.InstallDir };
+        return new InstallResult { AppExePath = appExe, Version = rel.Version, InstallDir = installDir };
     }
 
     public async Task<string> UninstallAsync(
@@ -137,6 +145,10 @@ public sealed class InstallService
     public static void ScheduleDirectoryDelete(string dir)
     {
         if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir)) return;
+
+        // Не планируем удаление опасных путей (корень диска и т.п.).
+        if (!IsDeletablePath(dir)) return;
+
         var psi = new ProcessStartInfo
         {
             FileName = "cmd.exe",
@@ -166,7 +178,85 @@ public sealed class InstallService
         return k is not null;
     }
 
+    // ===== Безопасность путей =====
+
+    /// <summary>
+    /// Приводит выбранный путь к безопасной папке установки: всегда добавляет
+    /// подпапку Simryx Hub, если её ещё нет. Так выбор «D:\» превращается в
+    /// «D:\Simryx Hub», а «D:\123» — в «D:\123\Simryx Hub».
+    /// </summary>
+    public static string ResolveInstallDir(string? chosen)
+    {
+        if (string.IsNullOrWhiteSpace(chosen))
+            return AppInfo.DefaultInstallDir;
+
+        string full;
+        try { full = Path.GetFullPath(chosen.Trim()); }
+        catch { return AppInfo.DefaultInstallDir; }
+
+        var name = new DirectoryInfo(full).Name;
+        if (string.Equals(name, InstallFolderName, StringComparison.OrdinalIgnoreCase))
+            return full;
+
+        return Path.Combine(full, InstallFolderName);
+    }
+
+    /// <summary>Бросает исключение, если папка установки опасна (корень диска / системная).</summary>
+    private static void EnsureSafeInstallDir(string dir)
+    {
+        var full = Path.GetFullPath(dir)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var root = (Path.GetPathRoot(full) ?? "")
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        // Корень диска (например, «D:»)
+        if (full.Length <= root.Length || full.Equals(root, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Недопустимая папка установки (корень диска). Выберите обычную папку.");
+
+        // Системные папки Windows
+        foreach (var b in new[]
+        {
+            Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            Environment.GetFolderPath(Environment.SpecialFolder.SystemX86),
+        })
+        {
+            var bb = (b ?? "").TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (bb.Length > 0 &&
+                (full.Equals(bb, StringComparison.OrdinalIgnoreCase) ||
+                 full.StartsWith(bb + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException(
+                    "Недопустимая папка установки (системная папка Windows).");
+        }
+    }
+
+    /// <summary>Путь можно безопасно удалять рекурсивно? (не корень диска и не системная папка)</summary>
+    private static bool IsDeletablePath(string dir)
+    {
+        try
+        {
+            var full = Path.GetFullPath(dir)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            var root = (Path.GetPathRoot(full) ?? "")
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (full.Length <= root.Length || full.Equals(root, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (windows.Length > 0 &&
+                (full.Equals(windows, StringComparison.OrdinalIgnoreCase) ||
+                 full.StartsWith(windows + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
+                return false;
+
+            return true;
+        }
+        catch { return false; }
+    }
+
     // ===== helpers =====
+
     private static string? FindAppExe(string dir)
     {
         // Сначала ищем по известным именам — включая вложенные папки.
@@ -188,6 +278,21 @@ public sealed class InstallService
     private static void CleanDirContents(string dir)
     {
         if (!Directory.Exists(dir)) return;
+
+        // ЗАЩИТА ОТ ПОТЕРИ ДАННЫХ: чистим ТОЛЬКО собственную папку установки
+        // (с именем Simryx Hub) и никогда — корень диска или произвольную папку.
+        var full = Path.GetFullPath(dir)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var root = (Path.GetPathRoot(full) ?? "")
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        if (full.Length <= root.Length || full.Equals(root, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Отказано: очистка корня диска недопустима.");
+
+        if (!string.Equals(new DirectoryInfo(full).Name, InstallFolderName, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Отказано: папка не является каталогом установки Simryx Hub.");
+
         var self = Environment.ProcessPath ?? "";
         foreach (var f in Directory.EnumerateFiles(dir))
         {

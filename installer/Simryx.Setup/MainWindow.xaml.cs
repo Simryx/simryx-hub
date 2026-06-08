@@ -28,7 +28,6 @@ public partial class MainWindow : Window
         _uninstall = uninstall;
         LicenseBox.Text = AppInfo.License;
         PathBox.Text = AppInfo.DefaultInstallDir;
-
         _sequence = uninstall
             ? new List<Step> { Step.Uninstall, Step.Progress, Step.Finish }
             : new List<Step> { Step.Welcome, Step.License, Step.Location, Step.Options, Step.Progress, Step.Finish };
@@ -88,7 +87,6 @@ public partial class MainWindow : Window
     {
         BtnBack.Visibility = (_index > 0 && Current != Step.Progress && Current != Step.Finish)
             ? Visibility.Visible : Visibility.Hidden;
-
         BtnCancel.Visibility = (Current == Step.Progress || Current == Step.Finish)
             ? Visibility.Hidden : Visibility.Visible;
 
@@ -181,13 +179,14 @@ public partial class MainWindow : Window
             DesktopShortcut = OptDesktop.IsChecked == true,
             RunAtStartup = OptStartup.IsChecked == true,
         };
-
         var progress = new Progress<ProgressReport>(ReportProgress);
+
         try
         {
             _result = await _service.InstallAsync(opts, progress);
             FinishTitle.Text = "Установка завершена";
-            FinishText.Text = $"Simryx Hub {_result.Version} успешно установлен.";
+            // Показываем реальную папку установки (установщик добавляет подпапку Simryx Hub).
+            FinishText.Text = $"Simryx Hub {_result.Version} установлен в:\n{_result.InstallDir}";
             LaunchNow.Visibility = Visibility.Visible;
             _busy = false;
             GoTo(Step.Finish);
@@ -205,8 +204,8 @@ public partial class MainWindow : Window
         var purge = PurgeData.IsChecked == true;
         ProgressTitle.Text = "Удаление Simryx Hub";
         Bar.IsIndeterminate = true;
-
         var progress = new Progress<ProgressReport>(ReportProgress);
+
         try
         {
             _uninstallDir = await _service.UninstallAsync(progress, purge);

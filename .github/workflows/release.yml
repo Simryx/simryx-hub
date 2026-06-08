@@ -23,15 +23,22 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $version = $env:GITHUB_REF_NAME.TrimStart('v')
           $numeric = ($version -split '-')[0]
+          # Полностью автономная сборка: -r win-x64 + SelfContained (.NET рантайм),
+          # а WindowsAppSDKSelfContained=true в .csproj докладывает Windows App SDK.
+          # Итог: приложение запускается без установки .NET и Windows App Runtime.
           dotnet build src/Simryx.App/Simryx.App.csproj `
-            -c Release -p:Platform=x64 `
+            -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true `
             -p:Version=$numeric -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
             -p:TreatWarningsAsErrors=false
           if ($LASTEXITCODE -ne 0) { throw "app build failed: $LASTEXITCODE" }
 
-          $outDir = Get-ChildItem "src/Simryx.App/bin/x64/Release" -Directory | Select-Object -First 1
+          # Находим папку с собранным exe (с RID путь вложен в win-x64) и архивируем её.
+          $buildRoot = "src/Simryx.App/bin/x64/Release"
+          $exe = Get-ChildItem $buildRoot -Recurse -Filter "Simryx.App.exe" | Select-Object -First 1
+          if (-not $exe) { throw "Simryx.App.exe not found under $buildRoot" }
+          $outDir = $exe.Directory.FullName
           New-Item -ItemType Directory -Force -Path publish | Out-Null
-          Compress-Archive -Path "$($outDir.FullName)/*" `
+          Compress-Archive -Path "$outDir/*" `
             -DestinationPath "publish/Simryx.Hub.$version-win-x64.zip" -Force
 
       - name: Build installer (single-file exe)
