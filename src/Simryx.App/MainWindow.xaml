@@ -4,17 +4,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Simryx Hub">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Кастомный заголовок: иконка + название (как было) -->
+        <!-- Кастомный заголовок: иконка + название -->
         <Grid x:Name="AppTitleBar" Grid.Row="0" Height="40" Padding="12,0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
-                <Image Source="ms-appx:///Assets/Logo.png" Width="20" Height="20" />
+                <Image Source="ms-appx:///Assets/Simryx.png" Width="20" Height="20" />
                 <TextBlock Text="Simryx Hub" VerticalAlignment="Center" FontWeight="SemiBold" />
             </StackPanel>
         </Grid>
@@ -29,7 +28,6 @@
             PaneOpening="NavView_PaneOpening"
             PaneClosing="NavView_PaneClosing"
             SelectionChanged="NavView_SelectionChanged">
-
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Uid="NavDashboard" Tag="Dashboard">
                     <NavigationViewItem.Icon><SymbolIcon Symbol="Home" /></NavigationViewItem.Icon>
@@ -44,7 +42,6 @@
                     <NavigationViewItem.Icon><SymbolIcon Symbol="Favorite" /></NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
-
             <Frame x:Name="ContentFrame" />
         </NavigationView>
 

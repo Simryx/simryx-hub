@@ -41,6 +41,17 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+
+    <!-- Логотип, используемый внутри окна (шапка + splash).
+         Обязательно как Content, иначе ms-appx:/// не найдёт файл рядом с exe. -->
+    <Content Include="Assets\Simryx.png" />
+
+    <!-- Когда добавишь файлы для анимации splash — раскомментируй: -->
+    <!--
+    <Content Include="Assets\LogoPart1.png" />
+    <Content Include="Assets\LogoPart2.png" />
+    <Content Include="Assets\LogoPart3.png" />
+    -->
   </ItemGroup>
 
   <ItemGroup>
