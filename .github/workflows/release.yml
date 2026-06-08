@@ -2,62 +2,56 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    tags: ["v*.*.*"]
 
 permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  release:
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
 
-      - name: Build and package
+      - name: Build app (zip payload)
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-
-          $tag = $env:GITHUB_REF_NAME
-          $version = $tag.TrimStart('v')
-          $numeric = ($version -split '[-+]')[0]
-          Write-Host "Tag=$tag  Version=$version  Numeric=$numeric"
-
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $numeric = ($version -split '-')[0]
           dotnet build src/Simryx.App/Simryx.App.csproj `
-            -c Release `
-            -p:Platform=x64 `
-            -p:Version=$numeric `
-            -p:FileVersion=$numeric `
-            -p:AssemblyVersion=$numeric `
+            -c Release -p:Platform=x64 `
+            -p:Version=$numeric -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
             -p:TreatWarningsAsErrors=false
-          if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
+          if ($LASTEXITCODE -ne 0) { throw "app build failed: $LASTEXITCODE" }
 
-          $releaseRoot = "src/Simryx.App/bin/x64/Release"
-          if (-not (Test-Path $releaseRoot)) { throw "Release folder not found: $releaseRoot" }
-
-          $tfmDir = Get-ChildItem $releaseRoot -Directory | Select-Object -First 1
-          if ($null -eq $tfmDir) { throw "No build output under $releaseRoot" }
-          $outDir = $tfmDir.FullName
-          Write-Host "Build output: $outDir"
-          Get-ChildItem $outDir | Select-Object Name | Format-Table -AutoSize
-
+          $outDir = Get-ChildItem "src/Simryx.App/bin/x64/Release" -Directory | Select-Object -First 1
           New-Item -ItemType Directory -Force -Path publish | Out-Null
-          $zip = "publish/Simryx.Hub.$version-win-x64.zip"
-          if (Test-Path $zip) { Remove-Item $zip -Force }
-          Compress-Archive -Path (Join-Path $outDir '*') -DestinationPath $zip
-          Write-Host "Created $zip"
+          Compress-Archive -Path "$($outDir.FullName)/*" `
+            -DestinationPath "publish/Simryx.Hub.$version-win-x64.zip" -Force
+
+      - name: Build installer (single-file exe)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet publish installer/Simryx.Setup/Simryx.Setup.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -o installer-out
+          if ($LASTEXITCODE -ne 0) { throw "installer publish failed: $LASTEXITCODE" }
+          New-Item -ItemType Directory -Force -Path installer-dist | Out-Null
+          Copy-Item installer-out/SimryxSetup.exe installer-dist/SimryxSetup.exe -Force
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             publish/*.zip
-            installer/*.exe
+            installer-dist/SimryxSetup.exe
           generate_release_notes: true

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Simryx.Setup</RootNamespace>
+    <AssemblyName>SimryxSetup</AssemblyName>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <AssemblyTitle>Simryx Hub Installer</AssemblyTitle>
+    <Product>Simryx Hub</Product>
+    <Company>Simryx</Company>
+    <!-- Положи иконку в Resources\Simryx.ico и раскомментируй строку ниже,
+         чтобы у установщика была фирменная иконка: -->
+    <!-- <ApplicationIcon>Resources\Simryx.ico</ApplicationIcon> -->
+  </PropertyGroup>
+
+</Project>

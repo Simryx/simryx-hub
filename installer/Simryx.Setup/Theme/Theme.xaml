@@ -1,0 +1,70 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Значения по умолчанию (тёмная). ThemeManager переопределяет их в рантайме. -->
+    <SolidColorBrush x:Key="Brush.Bg"           Color="#0E1116"/>
+    <SolidColorBrush x:Key="Brush.Surface"      Color="#161A21"/>
+    <SolidColorBrush x:Key="Brush.Text"         Color="#E7ECF3"/>
+    <SolidColorBrush x:Key="Brush.Subtle"       Color="#9AA4B2"/>
+    <SolidColorBrush x:Key="Brush.Border"       Color="#272E39"/>
+    <SolidColorBrush x:Key="Brush.Control"      Color="#1E242D"/>
+    <SolidColorBrush x:Key="Brush.ControlHover" Color="#28303B"/>
+    <SolidColorBrush x:Key="Brush.Accent"       Color="#5AB6E8"/>
+    <SolidColorBrush x:Key="Brush.AccentText"   Color="#04151E"/>
+
+    <Style x:Key="AccentButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.AccentText}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="20,9"/>
+        <Setter Property="MinWidth" Value="110"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="b" Background="{TemplateBinding Background}"
+                            CornerRadius="8" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="b" Property="Opacity" Value="0.9"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="b" Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource Brush.Control}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}"/>
+        <Setter Property="Padding" Value="20,9"/>
+        <Setter Property="MinWidth" Value="110"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="b" Background="{TemplateBinding Background}"
+                            CornerRadius="8" Padding="{TemplateBinding Padding}"
+                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="b" Property="Background" Value="{DynamicResource Brush.ControlHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="b" Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -20,7 +20,6 @@ public sealed class UpdateService
 {
     public const string Owner = "Simryx";
     public const string Repo = "simryx-hub";
-
     private const string ApiBase = "https://api.github.com";
 
     private static readonly HttpClient Http = CreateClient();
@@ -114,20 +113,24 @@ public sealed class UpdateService
         };
     }
 
-    // Выбираем установщик среди прикреплённых файлов релиза.
+    // Выбираем файл ДЛЯ АВТО-ОБНОВЛЕНИЯ среди прикреплённых к релизу.
+    // Важно: в релизе теперь два файла — пакет приложения (.zip) и установщик
+    // SimryxSetup.exe. Авто-обновление должно брать ZIP-пакет, а SimryxSetup.exe
+    // предназначен только для первичной установки новыми пользователями, поэтому
+    // он явно исключается.
     private static GhAsset? PickInstaller(List<GhAsset>? assets)
     {
         if (assets is null || assets.Count == 0) return null;
 
         bool Ends(GhAsset a, string ext) =>
             (a.Name ?? string.Empty).EndsWith(ext, StringComparison.OrdinalIgnoreCase);
+        bool IsSetup(GhAsset a) =>
+            (a.Name ?? string.Empty).Contains("SimryxSetup", StringComparison.OrdinalIgnoreCase);
 
-        return assets.FirstOrDefault(a => Ends(a, ".msixbundle"))
+        return assets.FirstOrDefault(a => !IsSetup(a) && Ends(a, ".zip"))
+            ?? assets.FirstOrDefault(a => Ends(a, ".msixbundle"))
             ?? assets.FirstOrDefault(a => Ends(a, ".msix"))
-            ?? assets.FirstOrDefault(a =>
-                   (a.Name ?? string.Empty).Contains("setup", StringComparison.OrdinalIgnoreCase)
-                   && Ends(a, ".exe"))
-            ?? assets.FirstOrDefault(a => Ends(a, ".exe"))
+            ?? assets.FirstOrDefault(a => !IsSetup(a) && Ends(a, ".exe"))
             ?? assets.FirstOrDefault(a => Ends(a, ".zip"));
     }
 
@@ -139,22 +142,17 @@ public sealed class UpdateService
     private static string? ExtractSha256(string? body, string? assetName)
     {
         if (string.IsNullOrWhiteSpace(body)) return null;
-
         string? fallback = null;
         foreach (var raw in body.Split('\n'))
         {
             var line = raw.Trim();
             if (line.Length == 0) continue;
-
             var m = Regex.Match(line, "(?<![A-Fa-f0-9])([A-Fa-f0-9]{64})(?![A-Fa-f0-9])");
             if (!m.Success) continue;
-
             var hash = m.Groups[1].Value.ToLowerInvariant();
-
             if (!string.IsNullOrEmpty(assetName) &&
                 line.Contains(assetName!, StringComparison.OrdinalIgnoreCase))
                 return hash; // точное совпадение по имени файла
-
             fallback ??= hash;
         }
         return fallback;
@@ -166,10 +164,8 @@ public sealed class UpdateService
         if (string.IsNullOrWhiteSpace(tag)) return new Version(0, 0, 0, 0);
         var s = tag.Trim();
         if (s.StartsWith("v", StringComparison.OrdinalIgnoreCase)) s = s.Substring(1);
-
         var cut = s.IndexOfAny(new[] { '-', '+' });
         if (cut >= 0) s = s.Substring(0, cut);
-
         var parts = s.Split('.', StringSplitOptions.RemoveEmptyEntries);
         int Get(int i) => i < parts.Length && int.TryParse(parts[i], out var n) ? n : 0;
         return new Version(Get(0), Get(1), Get(2), Get(3));
@@ -185,7 +181,6 @@ public sealed class UpdateService
         };
 
     // ===== DTO ответа GitHub =====
-
     private sealed class GhRelease
     {
         [JsonPropertyName("tag_name")] public string? TagName { get; set; }
