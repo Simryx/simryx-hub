@@ -7,7 +7,6 @@
         FontFamily="Segoe UI Variable Text, Segoe UI"
         Background="{DynamicResource Brush.Bg}"
         Foreground="{DynamicResource Brush.Text}">
-
     <Grid Margin="28,24,28,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -130,6 +129,13 @@
                     <TextBlock x:Name="UninstallText" TextWrapping="Wrap" TextAlignment="Center"
                                Foreground="{DynamicResource Brush.Subtle}"
                                Text="Приложение и его ярлыки будут удалены с компьютера. Продолжить?"/>
+                    <CheckBox x:Name="PurgeData" Margin="0,18,0,0" HorizontalAlignment="Center"
+                              Foreground="{DynamicResource Brush.Text}"
+                              Content="Удалить также все мои настройки, профили и данные"/>
+                    <TextBlock x:Name="PurgeHint" TextWrapping="Wrap" TextAlignment="Center"
+                               Margin="0,8,0,0" FontSize="12"
+                               Foreground="{DynamicResource Brush.Subtle}"
+                               Text="Если флажок снят, ваши профили и настройки сохранятся для будущей установки."/>
                 </StackPanel>
             </Grid>
         </Border>

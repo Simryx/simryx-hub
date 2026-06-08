@@ -18,7 +18,6 @@ public partial class MainWindow : Window
     private int _index;
     private bool _busy;
     private bool _done;
-
     private readonly InstallService _service = new();
     private InstallResult? _result;
     private string _uninstallDir = "";
@@ -27,7 +26,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _uninstall = uninstall;
-
         LicenseBox.Text = AppInfo.License;
         PathBox.Text = AppInfo.DefaultInstallDir;
 
@@ -39,6 +37,8 @@ public partial class MainWindow : Window
         {
             UninstallText.Text = "Установка Simryx Hub не найдена в системе.";
             _uninstallDir = InstallService.ReadInstallLocation();
+            PurgeData.Visibility = Visibility.Collapsed;
+            PurgeHint.Visibility = Visibility.Collapsed;
         }
         else if (uninstall)
         {
@@ -183,7 +183,6 @@ public partial class MainWindow : Window
         };
 
         var progress = new Progress<ProgressReport>(ReportProgress);
-
         try
         {
             _result = await _service.InstallAsync(opts, progress);
@@ -203,15 +202,18 @@ public partial class MainWindow : Window
     private async Task RunUninstallAsync()
     {
         _busy = true;
+        var purge = PurgeData.IsChecked == true;
         ProgressTitle.Text = "Удаление Simryx Hub";
         Bar.IsIndeterminate = true;
-        var progress = new Progress<ProgressReport>(ReportProgress);
 
+        var progress = new Progress<ProgressReport>(ReportProgress);
         try
         {
-            _uninstallDir = await _service.UninstallAsync(progress);
+            _uninstallDir = await _service.UninstallAsync(progress, purge);
             FinishTitle.Text = "Удаление завершено";
-            FinishText.Text = "Simryx Hub удалён с компьютера.";
+            FinishText.Text = purge
+                ? "Simryx Hub и все его настройки, профили и данные удалены с компьютера."
+                : "Simryx Hub удалён с компьютера. Ваши настройки и профили сохранены.";
             LaunchNow.Visibility = Visibility.Collapsed;
             _busy = false;
             GoTo(Step.Finish);

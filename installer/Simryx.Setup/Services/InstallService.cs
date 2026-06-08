@@ -30,6 +30,10 @@ public sealed class InstallService
 {
     private readonly GitHubClient _gh = new();
 
+    /// <summary>Папка с пользовательскими данными приложения (%LocalAppData%\Simryx).</summary>
+    public static string DataDir => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simryx");
+
     public async Task<InstallResult> InstallAsync(
         InstallOptions o, IProgress<ProgressReport> p, CancellationToken ct = default)
     {
@@ -88,7 +92,8 @@ public sealed class InstallService
         return new InstallResult { AppExePath = appExe, Version = rel.Version, InstallDir = o.InstallDir };
     }
 
-    public async Task<string> UninstallAsync(IProgress<ProgressReport> p, CancellationToken ct = default)
+    public async Task<string> UninstallAsync(
+        IProgress<ProgressReport> p, bool purgeData, CancellationToken ct = default)
     {
         await Task.Yield();
         var dir = ReadInstallLocation();
@@ -102,8 +107,30 @@ public sealed class InstallService
         p.Report(new("Очистка записей реестра…", -1));
         RemoveUninstallRegistry();
 
+        if (purgeData)
+        {
+            p.Report(new("Удаление настроек, профилей и данных…", -1));
+            PurgeUserData();
+        }
+
         p.Report(new("Готово", 100));
         return dir;
+    }
+
+    /// <summary>Полностью удаляет пользовательские данные (%LocalAppData%\Simryx).</summary>
+    public static void PurgeUserData()
+    {
+        var dir = DataDir;
+        if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir)) return;
+        try
+        {
+            Directory.Delete(dir, true);
+        }
+        catch
+        {
+            // Если что-то заблокировано — попробуем удалить отложенно после выхода.
+            ScheduleDirectoryDelete(dir);
+        }
     }
 
     /// <summary>Удаляет папку установки после выхода процесса (через отложенный cmd).</summary>
@@ -140,7 +167,6 @@ public sealed class InstallService
     }
 
     // ===== helpers =====
-
     private static string? FindAppExe(string dir)
     {
         // Сначала ищем по известным именам — включая вложенные папки.
