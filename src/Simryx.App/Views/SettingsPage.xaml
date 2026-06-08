@@ -132,7 +132,7 @@
             <TextBlock x:Uid="AboutHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsExpander x:Uid="AboutExpander" Header="Simryx Hub">
                 <ctk:SettingsExpander.HeaderIcon>
-                    <ImageIcon Source="ms-appx:///Assets/Logo.png" />
+                    <ImageIcon Source="ms-appx:///Assets/Simryx.png" />
                 </ctk:SettingsExpander.HeaderIcon>
                 <TextBlock x:Name="VersionBadge" VerticalAlignment="Center"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="" />

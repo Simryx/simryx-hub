@@ -147,6 +147,7 @@ public sealed partial class SettingsPage : Page
     {
         if (!_loaded) return;
         _settings.Save("Units", UnitsCombo.SelectedIndex == 1 ? "Imperial" : "Metric");
+        App.Services.GetService<UnitsService>()?.NotifyChanged(); // живое обновление открытых экранов
     }
 
     // ===== Запуск и система =====
@@ -169,7 +170,7 @@ public sealed partial class SettingsPage : Page
     {
         if (!_loaded) return;
         _settings.Save("MinimizeToTray", TrayToggle.IsOn);
-        if (TrayToggle.IsOn) ShowStatus(_res.GetString("StatusTrayLater"));
+        App.UpdateTrayVisibility(); // мгновенно показываем/прячем иконку трея
     }
 
     // Общий обработчик для простых переключателей (ключ — в Tag)
@@ -204,9 +205,9 @@ public sealed partial class SettingsPage : Page
     // Текущий канал из настройки (единый разбор).
     private UpdateChannel ReadChannel() =>
         (_settings.Read<string>("UpdateChannel") ?? "Stable")
-            .Equals("Beta", StringComparison.OrdinalIgnoreCase)
-            ? UpdateChannel.Beta
-            : UpdateChannel.Stable;
+        .Equals("Beta", StringComparison.OrdinalIgnoreCase)
+        ? UpdateChannel.Beta
+        : UpdateChannel.Stable;
 
     // Общая проверка обновлений: используется и кнопкой, и сменой канала.
     private async Task RunUpdateCheckAsync()
@@ -249,7 +250,7 @@ public sealed partial class SettingsPage : Page
                 var dialog = new ContentDialog
                 {
                     Title = en ? $"Version {info.Version} is available"
-                               : $"Доступна версия {info.Version}",
+                        : $"Доступна версия {info.Version}",
                     Content = BuildNotesContent(info, en),
                     CloseButtonText = en ? "Later" : "Позже",
                     DefaultButton = ContentDialogButton.Primary,
@@ -356,6 +357,11 @@ public sealed partial class SettingsPage : Page
 
         Directory.CreateDirectory(SettingsDir);
         File.WriteAllText(SettingsFile, await FileIO.ReadTextAsync(file));
+
+        // Файл заменён в обход сервиса — обновляем кэш, иначе следующий Save
+        // перезапишет импортированные настройки устаревшими значениями из памяти.
+        _settings.Reload();
+
         ShowStatus(_res.GetString("StatusImported"));
         RestartInfoBar.IsOpen = true;
     }
