@@ -61,7 +61,7 @@ public partial class App : Application
         // Единая идентичность приложения (AUMID): нужна тостам и группировке
         // окон на панели задач. Ставим до создания окна и регистрации тостов.
         try { SetCurrentProcessExplicitAppUserModelID("Simryx.Hub"); } catch { /* не критично */ }
-
+        ShortcutService.EnsureStartMenuShortcut("Simryx.Hub", "Simryx Hub"); // ← добавить
         // Быстрая инициализация языка и темы — до показа окна
         Services.GetRequiredService<ILocalizationService>().Initialize();
         var theme = Services.GetRequiredService<IThemeSelectorService>();

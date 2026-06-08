@@ -101,6 +101,10 @@
                     </ctk:SettingsCard>
                 </ctk:SettingsExpander.Items>
             </ctk:SettingsExpander>
+            <Button x:Name="TestNotificationBtn"
+		        Click="TestNotification_Click"
+		        HorizontalAlignment="Left"
+		        Margin="0,8,0,0" />
             <!-- Конфиденциальность -->
             <TextBlock x:Uid="PrivacyHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="StatsCard">

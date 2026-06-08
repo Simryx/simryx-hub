@@ -78,6 +78,7 @@ public sealed partial class SettingsPage : Page
         NotifyDevicesToggle.IsOn = _settings.Read<bool?>("NotifyDevices") ?? true;
         NotifyFirmwareToggle.IsOn = _settings.Read<bool?>("NotifyFirmware") ?? true;
         NotifyErrorsToggle.IsOn = _settings.Read<bool?>("NotifyErrors") ?? true;
+        TestNotificationBtn.Content = IsEnglish ? "Send test notification" : "Показать тест-уведомление";
 
         // Конфиденциальность
         StatsToggle.IsOn = _settings.Read<bool?>("AnonymousStats") ?? false;
@@ -183,6 +184,33 @@ public sealed partial class SettingsPage : Page
         }
     }
 
+    // Тест-уведомления: шлём по одному тосту на каждую категорию.
+    // Выключенные в настройках категории молчат — так проверяется и гейтинг тумблеров.
+    private void TestNotification_Click(object sender, RoutedEventArgs e)
+    {
+        var notifications = App.Services.GetService<NotificationService>();
+        if (notifications is null) return;
+        var en = IsEnglish;
+
+        notifications.NotifyUpdate(
+            en ? "Update available" : "Доступно обновление",
+            en ? "Test of update notifications." : "Проверка уведомлений об обновлениях.");
+        notifications.NotifyDevice(
+            en ? "Device connected" : "Устройство подключено",
+            en ? "Test of device notifications." : "Проверка уведомлений об устройствах.");
+        notifications.NotifyFirmware(
+            en ? "Firmware update" : "Обновление прошивки",
+            en ? "Test of firmware notifications." : "Проверка уведомлений о прошивке.");
+        notifications.NotifyError(
+            en ? "Error example" : "Пример ошибки",
+            en ? "Test of error notifications." : "Проверка уведомлений об ошибках.");
+
+        ShowStatus(InfoBarSeverity.Informational,
+            string.Empty,
+            en ? "Test notifications sent (only enabled categories appear)."
+               : "Тест-уведомления отправлены (придут только включённые категории).");
+    }
+
     // ===== Обновления (Часть 2 + 3 + 5) =====
 
     private async void Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -194,13 +222,14 @@ public sealed partial class SettingsPage : Page
 
         // Канал сменился: сбрасываем устаревший кэш тихой авто-проверки,
         // чтобы на Главной не висел баннер из прошлого канала, и сразу
-        // перепроверяем в новом канале для мгновенной обратной связи.
+        // ТИХО перепроверяем в новом канале — результат в строке статуса,
+        // без модального окна (его показываем только по явной кнопке).
         UpdateCoordinator.ResetSession();
-        await RunUpdateCheckAsync();
+        await RunUpdateCheckAsync(silent: true);
     }
 
     private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
-        => await RunUpdateCheckAsync();
+        => await RunUpdateCheckAsync(silent: false);
 
     // Текущий канал из настройки (единый разбор).
     private UpdateChannel ReadChannel() =>
@@ -209,8 +238,10 @@ public sealed partial class SettingsPage : Page
         ? UpdateChannel.Beta
         : UpdateChannel.Stable;
 
-    // Общая проверка обновлений: используется и кнопкой, и сменой канала.
-    private async Task RunUpdateCheckAsync()
+    // Общая проверка обновлений.
+    // silent = true: смена канала — результат в строке статуса, без модалки.
+    // silent = false: кнопка «Проверить» — при наличии обновления показываем диалог.
+    private async Task RunUpdateCheckAsync(bool silent = false)
     {
         if (_updateChecking) return; // не запускаем параллельные проверки/диалоги
         _updateChecking = true;
@@ -223,7 +254,7 @@ public sealed partial class SettingsPage : Page
         try
         {
             var result = await new UpdateService().CheckForUpdatesAsync(ReadChannel());
-            await ApplyUpdateResultAsync(result, en);
+            await ApplyUpdateResultAsync(result, en, silent);
         }
         catch (Exception ex)
         {
@@ -238,14 +269,26 @@ public sealed partial class SettingsPage : Page
         }
     }
 
-    private async Task ApplyUpdateResultAsync(UpdateCheckResult result, bool en)
+    private async Task ApplyUpdateResultAsync(UpdateCheckResult result, bool en, bool silent)
     {
         switch (result.Status)
         {
             case UpdateStatus.UpdateAvailable when result.Info is not null:
             {
-                StatusInfoBar.IsOpen = false;
                 var info = result.Info;
+
+                // Тихий режим (смена канала): не дёргаем модалку, показываем статус.
+                if (silent)
+                {
+                    ShowStatus(InfoBarSeverity.Informational,
+                        en ? $"Version {info.Version} is available"
+                           : $"Доступна версия {info.Version}",
+                        en ? "Click \"Check for updates\" to install."
+                           : "Нажмите «Проверить обновления», чтобы установить.");
+                    break;
+                }
+
+                StatusInfoBar.IsOpen = false;
                 var hasInstaller = !string.IsNullOrWhiteSpace(info.DownloadUrl);
                 var dialog = new ContentDialog
                 {
