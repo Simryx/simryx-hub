@@ -30,15 +30,24 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         SystemBackdrop = new MicaBackdrop();
         Title = "Simryx Hub";
-
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
-
-        AppWindow.SetIcon("Assets\\Logo.ico");
+        SetWindowIcon();
         AppWindow.Resize(new SizeInt32(1100, 720));
-
         PrepareSplashInitialState();
         SplashContent.Loaded += OnSplashContentLoaded;
+    }
+
+    // Иконка окна (панель задач + превью миниатюры). В отличие от иконки exe
+    // (<ApplicationIcon>), она задаётся в рантайме и читается с диска, поэтому
+    // Simryx.ico ОБЯЗАТЕЛЬНО должен быть добавлен в .csproj как Content
+    // (чтобы попадал в папку вывода рядом с exe). Используем абсолютный путь —
+    // надёжнее при запуске из автозагрузки/обновлятора.
+    private void SetWindowIcon()
+    {
+        var iconPath = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Simryx.ico");
+        if (System.IO.File.Exists(iconPath))
+            AppWindow.SetIcon(iconPath);
     }
 
     // Показываем окно приветствия один раз, ПОСЛЕ сплэша — когда XamlRoot уже доступен
@@ -110,7 +119,6 @@ public sealed partial class MainWindow : Window
             RevealAsync(NavView,     delayMs: 140, durationMs: 660, fromOffset: new Vector3(0f, 20f, 0f), fromScale: 0.985f));
 
         SplashOverlay.Visibility = Visibility.Collapsed;
-
         await ShowOnboardingIfNeededAsync();
     }
 
@@ -129,7 +137,6 @@ public sealed partial class MainWindow : Window
         }
 
         var compositor = visual.Compositor;
-
         if (element is FrameworkElement fe)
             visual.CenterPoint = new Vector3((float)fe.ActualWidth / 2f, (float)fe.ActualHeight / 2f, 0f);
 
@@ -139,7 +146,6 @@ public sealed partial class MainWindow : Window
 
         var ease = compositor.CreateCubicBezierEasingFunction(
             new Vector2(0.16f, 1f), new Vector2(0.3f, 1f));
-
         var delay = TimeSpan.FromMilliseconds(delayMs);
         var duration = TimeSpan.FromMilliseconds(durationMs);
 
@@ -173,10 +179,8 @@ public sealed partial class MainWindow : Window
     {
         var parts = new[] { LogoPart1, LogoPart2, LogoPart3 };
         var compositor = ElementCompositionPreview.GetElementVisual(parts[0]).Compositor;
-
         var ease = compositor.CreateCubicBezierEasingFunction(
             new Vector2(0.33f, 1f), new Vector2(0.68f, 1f));
-
         var duration = TimeSpan.FromMilliseconds(850);
         const int stagger = 170;
 
@@ -189,7 +193,6 @@ public sealed partial class MainWindow : Window
             visual.CenterPoint = new Vector3(52f, 52f, 0f);
 
             var delay = TimeSpan.FromMilliseconds(i * stagger);
-
             var targetOpacity = assemble ? 1f : 0f;
             var targetOffset = assemble ? Vector3.Zero : PartOffsets[index];
             var targetScale = assemble ? Vector3.One : new Vector3(0.85f, 0.85f, 1f);
@@ -232,7 +235,6 @@ public sealed partial class MainWindow : Window
     {
         var visual = ElementCompositionPreview.GetElementVisual(element);
         var compositor = visual.Compositor;
-
         visual.Opacity = from;
 
         var animation = compositor.CreateScalarKeyFrameAnimation();
@@ -261,12 +263,10 @@ public sealed partial class MainWindow : Window
         {
             var visual = ElementCompositionPreview.GetElementVisual(item);
             var compositor = visual.Compositor;
-
             var fade = compositor.CreateScalarKeyFrameAnimation();
             fade.InsertKeyFrame(0f, 0.2f);
             fade.InsertKeyFrame(1f, 1f);
             fade.Duration = TimeSpan.FromMilliseconds(280);
-
             visual.StartAnimation("Opacity", fade);
         }
     }
@@ -295,6 +295,7 @@ public sealed partial class MainWindow : Window
                 "Profiles" => typeof(ProfilesPage),
                 _ => typeof(DashboardPage),
             };
+
             ContentFrame.Navigate(pageType, null, transition);
         }
     }
