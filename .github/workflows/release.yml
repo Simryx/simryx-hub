@@ -17,37 +17,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Build app (zip payload)
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $version = $env:GITHUB_REF_NAME.TrimStart('v')
-          $numeric = ($version -split '-')[0]
-          # Полностью автономная сборка: -r win-x64 + SelfContained (.NET рантайм),
-          # а WindowsAppSDKSelfContained=true в .csproj докладывает Windows App SDK.
-          # Итог: приложение запускается без установки .NET и Windows App Runtime.
-          #
-          # ВАЖНО (отображение версии): в Version кладём ПОЛНЫЙ semver вместе с
-          # суффиксом (например 0.2.1-beta.1) — он попадает в
-          # AssemblyInformationalVersion, который приложение читает в «О программе».
-          # AssemblyVersion/FileVersion обязаны быть числовыми, поэтому им отдаём
-          # только числовую часть ($numeric). IncludeSourceRevision...=false убирает
-          # хвост "+<git-hash>", чтобы версия отображалась ровно как "0.2.1-beta.1".
-          dotnet build src/Simryx.App/Simryx.App.csproj `
-            -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true `
-            -p:Version=$version -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
-            -p:IncludeSourceRevisionInInformationalVersion=false `
-            -p:TreatWarningsAsErrors=false
-          if ($LASTEXITCODE -ne 0) { throw "app build failed: $LASTEXITCODE" }
-          # Находим папку с собранным exe (с RID путь вложен в win-x64) и архивируем её.
-          $buildRoot = "src/Simryx.App/bin/x64/Release"
-          $exe = Get-ChildItem $buildRoot -Recurse -Filter "Simryx.App.exe" | Select-Object -First 1
-          if (-not $exe) { throw "Simryx.App.exe not found under $buildRoot" }
-          $outDir = $exe.Directory.FullName
-          New-Item -ItemType Directory -Force -Path publish | Out-Null
-          Compress-Archive -Path "$outDir/*" `
-            -DestinationPath "publish/Simryx.Hub.$version-win-x64.zip" -Force
-
+      # Установщик собираем ПЕРВЫМ — чтобы вложить его в пакет приложения.
       - name: Build installer (single-file exe)
         shell: pwsh
         run: |
@@ -61,6 +31,37 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "installer publish failed: $LASTEXITCODE" }
           New-Item -ItemType Directory -Force -Path installer-dist | Out-Null
           Copy-Item installer-out/SimryxSetup.exe installer-dist/SimryxSetup.exe -Force
+
+      - name: Build app (zip payload)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          $numeric = ($version -split '-')[0]
+          # Полностью автономная сборка: -r win-x64 + SelfContained (.NET рантайм),
+          # а WindowsAppSDKSelfContained=true в .csproj докладывает Windows App SDK.
+          #
+          # ВАЖНО (версия): в Version кладём ПОЛНЫЙ semver с суффиксом (0.2.1-beta.1) —
+          # он попадает в AssemblyInformationalVersion, который приложение показывает
+          # в «О программе». AssemblyVersion/FileVersion обязаны быть числовыми ($numeric).
+          dotnet build src/Simryx.App/Simryx.App.csproj `
+            -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true `
+            -p:Version=$version -p:FileVersion=$numeric -p:AssemblyVersion=$numeric `
+            -p:IncludeSourceRevisionInInformationalVersion=false `
+            -p:TreatWarningsAsErrors=false
+          if ($LASTEXITCODE -ne 0) { throw "app build failed: $LASTEXITCODE" }
+          # Находим папку с собранным exe (с RID путь вложен в win-x64).
+          $buildRoot = "src/Simryx.App/bin/x64/Release"
+          $exe = Get-ChildItem $buildRoot -Recurse -Filter "Simryx.App.exe" | Select-Object -First 1
+          if (-not $exe) { throw "Simryx.App.exe not found under $buildRoot" }
+          $outDir = $exe.Directory.FullName
+          # Кладём свежий установщик ВНУТРЬ пакета — авто-обновление будет заменять
+          # и SimryxSetup.exe (правильная тема окна обновления + актуальный деинсталлятор),
+          # а не только само приложение.
+          Copy-Item installer-dist/SimryxSetup.exe (Join-Path $outDir "SimryxSetup.exe") -Force
+          New-Item -ItemType Directory -Force -Path publish | Out-Null
+          Compress-Archive -Path "$outDir/*" `
+            -DestinationPath "publish/Simryx.Hub.$version-win-x64.zip" -Force
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
