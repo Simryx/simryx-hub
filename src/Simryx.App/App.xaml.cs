@@ -48,6 +48,7 @@ public partial class App : Application
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<NotificationService>();
         services.AddSingleton<UnitsService>();
+        services.AddSingleton<GameDetectionService>();
         // ViewModels
         services.AddTransient<SettingsViewModel>();
         return services.BuildServiceProvider();
@@ -92,6 +93,10 @@ public partial class App : Application
         // Иконка в трее (создаётся всегда, показывается при включённом MinimizeToTray).
         InitializeTray();
         UpdateTrayVisibility();
+
+        // Фоновое определение запущенной игры: авто-смена профиля + телеметрия.
+        // Безопасно: читаем только список процессов ОС и официальную телеметрию игр.
+        Services.GetRequiredService<GameDetectionService>().Start();
 
         // Перехват закрытия окна (крестик) -> сворачивание в трей, если включено.
         if (MainWindow?.AppWindow is AppWindow mainAppWindow)

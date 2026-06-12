@@ -96,8 +96,8 @@ public sealed partial class SettingsPage : Page
 
     /// <summary>
     /// Отображаемая версия приложения вместе с pre-release-суффиксом (например "0.2.1-beta.1").
-    /// Источник — AssemblyInformationalVersion (туда из &lt;Version&gt; попадает полный semver).
-    /// Отрезаем "+&lt;git-hash&gt;", который .NET SDK добавляет к информационной версии.
+    /// Источник — AssemblyInformationalVersion (туда из <Version> попадает полный semver).
+    /// Отрезаем "+<git-hash>", который .NET SDK добавляет к информационной версии.
     /// </summary>
     private static string GetDisplayVersion()
     {
@@ -205,7 +205,6 @@ public sealed partial class SettingsPage : Page
     {
         var notifications = App.Services.GetService<NotificationService>();
         if (notifications is null) return;
-
         var en = IsEnglish;
         notifications.NotifyUpdate(
             en ? "Update available" : "Доступно обновление",
@@ -219,11 +218,10 @@ public sealed partial class SettingsPage : Page
         notifications.NotifyError(
             en ? "Error example" : "Пример ошибки",
             en ? "Test of error notifications." : "Проверка уведомлений об ошибках.");
-
         ShowStatus(InfoBarSeverity.Informational,
             string.Empty,
             en ? "Test notifications sent (only enabled categories appear)."
-               : "Тест-уведомления отправлены (придут только включённые категории).");
+            : "Тест-уведомления отправлены (придут только включённые категории).");
     }
 
     // ===== Обновления (Часть 2 + 3 + 5) =====
@@ -232,7 +230,6 @@ public sealed partial class SettingsPage : Page
         if (!_loaded) return;
         // Часть 5: сохраняем выбранный канал — единый источник правды для всех проверок.
         _settings.Save("UpdateChannel", ChannelCombo.SelectedIndex == 1 ? "Beta" : "Stable");
-
         // Канал сменился: сбрасываем устаревший кэш тихой авто-проверки,
         // чтобы на Главной не висел баннер из прошлого канала, и сразу
         // ТИХО перепроверяем в новом канале — результат в строке статуса,
@@ -258,13 +255,11 @@ public sealed partial class SettingsPage : Page
     {
         if (_updateChecking) return; // не запускаем параллельные проверки/диалоги
         _updateChecking = true;
-
         var en = IsEnglish;
         CheckUpdatesBtn.IsEnabled = false;
         ShowStatus(InfoBarSeverity.Informational,
             string.Empty,
             en ? "Checking for updates…" : "Проверяем обновления…");
-
         try
         {
             var result = await new UpdateService().CheckForUpdatesAsync(ReadChannel());
@@ -290,24 +285,22 @@ public sealed partial class SettingsPage : Page
             case UpdateStatus.UpdateAvailable when result.Info is not null:
             {
                 var info = result.Info;
-
                 // Тихий режим (смена канала): не дёргаем модалку, показываем статус.
                 if (silent)
                 {
                     ShowStatus(InfoBarSeverity.Informational,
                         en ? $"Version {info.Version} is available"
-                           : $"Доступна версия {info.Version}",
+                        : $"Доступна версия {info.Version}",
                         en ? "Click \"Check for updates\" to install."
-                           : "Нажмите «Проверить обновления», чтобы установить.");
+                        : "Нажмите «Проверить обновления», чтобы установить.");
                     break;
                 }
-
                 StatusInfoBar.IsOpen = false;
                 var hasInstaller = !string.IsNullOrWhiteSpace(info.DownloadUrl);
                 var dialog = new ContentDialog
                 {
                     Title = en ? $"Version {info.Version} is available"
-                        : $"Доступна версия {info.Version}",
+                    : $"Доступна версия {info.Version}",
                     Content = BuildNotesContent(info, en),
                     CloseButtonText = en ? "Later" : "Позже",
                     DefaultButton = ContentDialogButton.Primary,
@@ -323,7 +316,6 @@ public sealed partial class SettingsPage : Page
                 {
                     dialog.PrimaryButtonText = en ? "Open release page" : "Открыть страницу релиза";
                 }
-
                 var choice = await dialog.ShowAsync();
                 if (hasInstaller)
                 {
@@ -338,35 +330,31 @@ public sealed partial class SettingsPage : Page
                 }
                 break;
             }
-
             case UpdateStatus.RollbackAvailable when result.Info is not null:
             {
                 // Установлена бета-сборка, но выбран стабильный канал, а последняя
                 // стабильная версия не выше текущей → предлагаем вернуться на стабильную.
                 var info = result.Info;
                 var currentDisplay = GetDisplayVersion();
-
                 // Тихий режим (смена канала): без модалки, только строка статуса.
                 if (silent)
                 {
                     ShowStatus(InfoBarSeverity.Informational,
                         en ? $"Stable version {info.Version} is available"
-                           : $"Доступна стабильная версия {info.Version}",
+                        : $"Доступна стабильная версия {info.Version}",
                         en ? "You're on a beta build. Click \"Check for updates\" to switch to stable."
-                           : "У вас бета-сборка. Нажмите «Проверить обновления», чтобы вернуться на стабильную.");
+                        : "У вас бета-сборка. Нажмите «Проверить обновления», чтобы вернуться на стабильную.");
                     break;
                 }
-
                 StatusInfoBar.IsOpen = false;
                 var hasInstaller = !string.IsNullOrWhiteSpace(info.DownloadUrl);
                 var intro = en
                     ? $"You're using a beta build ({currentDisplay}). You can roll back to the stable version {info.Version}."
                     : $"Вы используете бета-сборку ({currentDisplay}). Можно вернуться на стабильную версию {info.Version}.";
-
                 var dialog = new ContentDialog
                 {
                     Title = en ? $"Roll back to stable {info.Version}?"
-                               : $"Вернуться на стабильную {info.Version}?",
+                    : $"Вернуться на стабильную {info.Version}?",
                     Content = BuildRollbackContent(intro, info, en),
                     CloseButtonText = en ? "Later" : "Позже",
                     DefaultButton = ContentDialogButton.Primary,
@@ -382,7 +370,6 @@ public sealed partial class SettingsPage : Page
                 {
                     dialog.PrimaryButtonText = en ? "Open release page" : "Открыть страницу релиза";
                 }
-
                 var choice = await dialog.ShowAsync();
                 if (hasInstaller)
                 {
@@ -397,13 +384,11 @@ public sealed partial class SettingsPage : Page
                 }
                 break;
             }
-
             case UpdateStatus.Failed:
                 ShowStatus(InfoBarSeverity.Error,
                     en ? "Update check failed" : "Ошибка проверки обновлений",
                     result.Error ?? string.Empty);
                 break;
-
             default:
                 ShowStatus(InfoBarSeverity.Success,
                     en ? "You're up to date" : "Установлена последняя версия",

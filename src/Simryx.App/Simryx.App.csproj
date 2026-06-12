@@ -80,6 +80,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Simryx.Core\Simryx.Core.csproj" />
+    <ProjectReference Include="..\Simryx.Profiles\Simryx.Profiles.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\Simryx.ScsPlugin\simryx_telemetry.dll"
+          Condition="Exists('..\Simryx.ScsPlugin\simryx_telemetry.dll')">
+      <Link>simryx_telemetry.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <!--

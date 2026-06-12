@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Simryx.App.Views.Telemetry.AssettoCorsaTelemetryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="12" MaxWidth="760">
+
+            <!-- СТАТУС -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="СТАТУС" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Авто" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusCar" HorizontalAlignment="Right" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Трасса" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusTrack" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Сессия" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusSession" HorizontalAlignment="Right" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Позиция" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusPos" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Круг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusLap" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Темп. воздуха" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusAir" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Темп. трассы" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusRoad" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Зацеп трассы" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StatusGrip" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Флаг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="FlagText" HorizontalAlignment="Right" FontWeight="SemiBold" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- УПРАВЛЕНИЕ (руль + педали + передача) -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="УПРАВЛЕНИЕ" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Руль (угол)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SteerValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="0°" /></Grid>
+                    <Grid><TextBlock Text="Газ" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="ThrottleVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="0%" /></Grid>
+                    <Grid><TextBlock Text="Тормоз" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="0%" /></Grid>
+                    <Grid><TextBlock Text="Сцепление (педаль)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="ClutchVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="0%" /></Grid>
+                    <Grid><TextBlock Text="Передача" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="GearValue" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="N" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ДВИГАТЕЛЬ И СКОРОСТЬ -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ДВИГАТЕЛЬ И СКОРОСТЬ" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Скорость" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SpeedValue" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Обороты" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="RpmValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="0" /></Grid>
+                    <Grid><TextBlock Text="Наддув (турбо)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TurboText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Усилие на руле (FFB)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="FfbText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Заряд ERS" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="ErsText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Рекуперация ERS" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="ErsHeatVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Колёс вне трассы" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TyresOutText" HorizontalAlignment="Right" FontFamily="Consolas" Text="0" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ПЕРЕГРУЗКИ (G) -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ПЕРЕГРУЗКИ (G)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Продольная" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="GLongValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="0.00" /></Grid>
+                    <Grid><TextBlock Text="Боковая" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="GLatValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="0.00" /></Grid>
+                    <Grid><TextBlock Text="Вертикальная" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="GVertValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="0.00" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ШИНЫ -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ШИНЫ  (темп · давление · износ · пробукс.)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Перед. левая" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TyreFL" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Перед. правая" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TyreFR" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Задн. левая" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TyreRL" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Задн. правая" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TyreRR" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ТОРМОЗА -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ТОРМОЗА  (темп.)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Перед. левый" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeFL" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Перед. правый" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeFR" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Задн. левый" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeRL" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Задн. правый" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeRR" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Баланс тормозов" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BrakeBiasText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ШАССИ / СЕТАП -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ШАССИ / СЕТАП" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Клиренс перед / зад" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="RideHeightVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Ход подвески (FL/FR/RL/RR)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SuspTravelVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Балласт" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="BallastVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Плотность воздуха" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AirDensityVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Под управлением ИИ" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AiControlVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- КРУГИ И ТОПЛИВО -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="КРУГИ И ТОПЛИВО" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Текущий круг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="LapCurrentText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Последний круг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="LapLastText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Лучший круг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="LapBestText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Сплит к лучшему" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DeltaText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Сектор" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SectorText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Осталось в сессии" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SessionLeftText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Топливо" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="FuelText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Расход/круг (расчёт)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="PerLapText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Хватит на (расчёт)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="RangeText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ДЕЛЬТА / ПРОГНОЗ (от игры) -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ДЕЛЬТА / ПРОГНОЗ (от игры)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Дельта к лучшему" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DeltaGameText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Прогноз круга" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="EstimatedLapText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Круг засчитан" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="ValidLapText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Расход/круг (игра)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="FuelPerLapGameText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Израсходовано за круг" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="UsedFuelText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Хватит на кругов (игра)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="FuelLapsGameText" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ЭЛЕКТРОНИКА (СОСТОЯНИЕ) -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ЭЛЕКТРОНИКА (СОСТОЯНИЕ)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="ABS (антиблокировка)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AbsValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="TC (антипробуксовка)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TcValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="DRS (антикрыло)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DrsValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Огранич. пит-лейн" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="PitLimiterValue" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- АССИСТЫ (НАСТРОЙКИ ИГРЫ) -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="АССИСТЫ (НАСТРОЙКИ ИГРЫ)" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Контроль устойчивости" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidStabilityVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Авто-сцепление" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidAutoClutchVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Авто-перегазовка" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidAutoBlipVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Износ шин (множитель)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidTyreRateVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Расход топлива (множитель)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidFuelRateVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Механ. повреждения" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidMechVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Грелки шин" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="AidBlanketsVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- СЕССИЯ / ТРАССА -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="СЕССИЯ / ТРАССА" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Штрафное время" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="PenaltyTimeVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Идеальная траектория" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="IdealLineVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Пит-окно (кругов)" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="PitWindowVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Секторов" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="SectorCountVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Длина трассы" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="TrackLenVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Штрафы включены" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="PenaltiesOnVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                    <Grid><TextBlock Text="Онлайн-сессия" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="OnlineVal" HorizontalAlignment="Right" FontFamily="Consolas" Text="—" /></Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ПОВРЕЖДЕНИЯ -->
+            <Border Background="{ThemeResource SimryxCardBrush}"
+                    BorderBrush="{ThemeResource SimryxCardBorderBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16,12">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="ПОВРЕЖДЕНИЯ" FontSize="12" FontWeight="SemiBold" CharacterSpacing="80"
+                               Foreground="{ThemeResource SimryxAccentBrush}" Margin="0,0,0,4" />
+                    <Grid><TextBlock Text="Перед" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DamageFront" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="0" /></Grid>
+                    <Grid><TextBlock Text="Зад" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DamageRear" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="0" /></Grid>
+                    <Grid><TextBlock Text="Лево" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DamageLeft" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="0" /></Grid>
+                    <Grid><TextBlock Text="Право" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="DamageRight" HorizontalAlignment="Right" FontFamily="Consolas" FontWeight="SemiBold" Text="0" /></Grid>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

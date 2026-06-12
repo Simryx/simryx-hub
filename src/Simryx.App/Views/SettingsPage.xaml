@@ -17,6 +17,7 @@
                 </InfoBar.ActionButton>
             </InfoBar>
             <InfoBar x:Name="StatusInfoBar" IsOpen="False" IsClosable="True" Severity="Informational" />
+
             <!-- Внешний вид -->
             <TextBlock x:Uid="AppearanceHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="ThemeCard">
@@ -31,6 +32,7 @@
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE916;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="ReduceMotionToggle" Toggled="ReduceMotion_Toggled" />
             </ctk:SettingsCard>
+
             <!-- Язык и регион -->
             <TextBlock x:Uid="LanguageRegionHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="LanguageCard">
@@ -47,6 +49,7 @@
                     <ComboBoxItem x:Uid="UnitsImperialItem" />
                 </ComboBox>
             </ctk:SettingsCard>
+
             <!-- Запуск и система -->
             <TextBlock x:Uid="StartupHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="StartupCard">
@@ -61,6 +64,7 @@
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE700;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="TrayToggle" Toggled="Tray_Toggled" />
             </ctk:SettingsCard>
+
             <!-- Обновления -->
             <TextBlock x:Uid="UpdatesHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="AutoUpdateCard">
@@ -82,6 +86,7 @@
                     <Button x:Name="CheckUpdatesBtn" x:Uid="CheckUpdatesButton" Click="CheckUpdates_Click" />
                 </StackPanel>
             </ctk:SettingsCard>
+
             <!-- Уведомления -->
             <TextBlock x:Uid="NotificationsHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsExpander x:Uid="NotificationsExpander">
@@ -102,9 +107,10 @@
                 </ctk:SettingsExpander.Items>
             </ctk:SettingsExpander>
             <Button x:Name="TestNotificationBtn"
-		        Click="TestNotification_Click"
-		        HorizontalAlignment="Left"
-		        Margin="0,8,0,0" />
+                Click="TestNotification_Click"
+                HorizontalAlignment="Left"
+                Margin="0,8,0,0" />
+
             <!-- Конфиденциальность -->
             <TextBlock x:Uid="PrivacyHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="StatsCard">
@@ -115,6 +121,7 @@
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE730;" /></ctk:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="CrashToggle" Tag="CrashReports" Toggled="PersistToggle_Toggled" />
             </ctk:SettingsCard>
+
             <!-- Дополнительно -->
             <TextBlock x:Uid="AdvancedHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsCard x:Uid="LogsCard">
@@ -132,6 +139,7 @@
                 <ctk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE777;" /></ctk:SettingsCard.HeaderIcon>
                 <Button x:Uid="ResetButton" Click="Reset_Click" />
             </ctk:SettingsCard>
+
             <!-- О программе -->
             <TextBlock x:Uid="AboutHeader" Style="{StaticResource BodyStrongTextBlockStyle}" Margin="0,14,0,4" />
             <ctk:SettingsExpander x:Uid="AboutExpander" Header="Simryx Hub">
